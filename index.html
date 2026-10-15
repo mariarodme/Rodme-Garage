@@ -160,7 +160,7 @@ document.getElementById('reportDetails').innerHTML='<div class="card"><h3>Total 
 function table(items){return `<div class="card"><div class="row"><h3>Registros (${items.length})</h3><span class="pill">Total: ${money(items.reduce((s,x)=>s+Number(x.amount||0),0))}</span></div><div class="scroll"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th>Monto</th><th></th></tr></thead><tbody>${items.length?items.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.kind)}</td><td>${esc(x.description)}${x.liters?` · ${esc(x.liters)} L`:''}${x.km?` · ${esc(x.km)} km`:''}${x.vendor?`<br><span class="muted">${esc(x.vendor)}</span>`:''}</td><td>${money(x.amount)}</td><td><div class="row"><button class="secondary" onclick="editEntry(${Number(x.id)})">Editar</button><button class="danger" onclick="removeEntry(${Number(x.id)})">Eliminar</button></div></td></tr>`).join(''):'<tr><td colspan="5" class="muted">No hay registros todavía.</td></tr>'}</tbody></table></div></div>`}function download(name,data,type){let a=document.createElement('a');let u=URL.createObjectURL(new Blob([data],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),2000)}function backup(){download('rodme-garage-respaldo-'+today()+'.json',JSON.stringify(state,null,2),'application/json')}function csv(){let fields=['date','kind','description','amount','vendor','km','liters','full'];let rows=[['Vehículo',...fields].join(';'),...state.vehicles.flatMap(v=>v.entries.map(o=>[v.name,...fields.map(f=>'"'+String(o[f]??'').replace(/"/g,'""')+'"')].join(';')))] ;download('rodme-garage-movimientos-'+today()+'.csv','\uFEFF'+rows.join('\r\n'),'text/csv;charset=utf-8')}async function restore(){let f=document.getElementById('import').files[0];if(!f)return alert('Seleccioná un archivo JSON.');try{let next=JSON.parse(await f.text());if(!Array.isArray(next.vehicles)||!next.vehicles.length||next.vehicles.some(v=>!Array.isArray(v.entries)||!Array.isArray(v.tasks)||!Array.isArray(v.docs)))throw Error('Formato inválido');if(!confirm('Se reemplazarán todos los datos actuales. ¿Continuar?'))return;state=next;state.selectedVehicleId=active().id;save();render();alert('Datos restaurados.')}catch(e){alert('No se pudo importar el archivo: '+e.message)}}
 
 const firebaseConfig={apiKey:"AIzaSyA53OoXZqpn3IqRaL98HcPs3HgZLRyPKMU",authDomain:"rodme-garage.firebaseapp.com",projectId:"rodme-garage",storageBucket:"rodme-garage.firebasestorage.app",messagingSenderId:"431305257232",appId:"1:431305257232:web:747b3052c3f1103aa73595"};
-let cloudDb=null,cloudUser=null,cloudReady=false,cloudTimer=null,cloudSnapshot=null,cloudDirty=false,cloudWriting=false,cloudQueued=false,cloudVersion=0;
+let cloudDb=null,cloudUser=null,cloudReady=false,cloudTimer=null,cloudSnapshot=null,cloudDirty=false,cloudWriting=false,cloudQueued=false,cloudVersion=0,cloudRevision=0,cloudConflict=false;
 const cloudGate=document.getElementById('cloudGate'),cloudLogin=document.getElementById('cloudLogin'),cloudImport=document.getElementById('cloudImport'),cloudSubtitle=document.getElementById('cloudSubtitle');
 const cloudMessage=document.getElementById('cloudMessage');
 function cloudError(e){return ({'auth/invalid-credential':'Correo o contraseña incorrectos.','auth/email-already-in-use':'El correo ya está registrado.','auth/weak-password':'La contraseña debe tener al menos 6 caracteres.','auth/unauthorized-domain':'Agregá el dominio de GitHub Pages a Authentication → Settings → Authorized domains.','auth/operation-not-allowed':'Activá el proveedor correspondiente en Firebase Authentication.','auth/account-exists-with-different-credential':'Ya existe una cuenta con ese correo mediante otro método. Iniciá sesión con el método anterior antes de vincular Google.','auth/popup-closed-by-user':'Se cerró la ventana de Google sin iniciar sesión.','permission-denied':'Firestore denegó el acceso. Revisá las reglas de seguridad.','unavailable':'No hay conexión disponible. Volvé a intentarlo.'})[e.code]||('No se pudo completar: '+(e.message||e.code||'Error desconocido'))}
@@ -171,8 +171,8 @@ function cloudWatch(){
   cloudSnapshot=cloudDoc().onSnapshot({includeMetadataChanges:true},snap=>{
     if(!cloudReady||!snap.exists||!snap.data().state)return;
     if(snap.metadata.hasPendingWrites)return;
-    if(cloudDirty||cloudWriting)return;
-    const incoming=snap.data().state;
+    if(cloudDirty||cloudWriting||cloudConflict)return;
+    cloudRevision=Number(snap.data().revision||0);const incoming=snap.data().state;
     if(JSON.stringify(incoming)!==JSON.stringify(state)){
       state=incoming;
       if(!state.vehicles.some(v=>v.id===state.selectedVehicleId))state.selectedVehicleId=state.vehicles[0].id;
@@ -187,27 +187,31 @@ function cloudWatch(){
   });
 }
 async function cloudWrite(){
- if(!cloudReady||!cloudUser)return;
+ if(!cloudReady||!cloudUser||cloudConflict)return;
  if(cloudWriting){cloudQueued=true;return}
- cloudWriting=true;
- const version=cloudVersion;
- const snapshot=JSON.parse(JSON.stringify(state));
+ cloudWriting=true;const version=cloudVersion;const snapshot=JSON.parse(JSON.stringify(state));
  try{
-  await cloudDoc().set({state:snapshot,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+  const expected=cloudRevision;
+  const newRevision=await cloudDb.runTransaction(async tx=>{
+   const doc=await tx.get(cloudDoc());
+   const actual=Number((doc.exists&&doc.data().revision)||0);
+   if(actual!==expected)throw new Error('conflict:los datos cambiaron en otro dispositivo');
+   tx.set(cloudDoc(),{state:snapshot,revision:actual+1,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+   return actual+1;
+  });
+  cloudRevision=newRevision;
   if(version===cloudVersion)cloudDirty=false;
-  if(!cloudDirty&&!cloudQueued){
-   document.getElementById('cloudStatus').textContent='Guardado en línea';
-   document.getElementById('headerSync').textContent='Sincronizado con Firebase';
-  }
+  if(!cloudDirty&&!cloudQueued){document.getElementById('cloudStatus').textContent='Guardado en línea';document.getElementById('headerSync').textContent='Sincronizado con Firebase'}
  }catch(e){
   cloudDirty=true;
-  document.getElementById('cloudStatus').textContent='Error de sincronización';
-  document.getElementById('headerSync').textContent='No guardado · Reintentar';
+  if(String(e.message||'').includes('conflict:')){
+   cloudConflict=true;cloudQueued=false;
+   document.getElementById('cloudStatus').textContent='Conflicto entre dispositivos · Respaldá antes de continuar';
+   document.getElementById('headerSync').textContent='Cambios no guardados · Conflicto';
+   alert('Otro dispositivo modificó el garaje. No sobrescribí sus cambios. Descargá un respaldo JSON de este dispositivo desde Respaldos antes de volver a cargar la página.');
+  }else{document.getElementById('cloudStatus').textContent='Error de sincronización';document.getElementById('headerSync').textContent='No guardado · Reintentar'}
   console.error('Firebase:',e);
- }finally{
-  cloudWriting=false;
-  if(cloudQueued){cloudQueued=false;cloudWrite()}
- }
+ }finally{cloudWriting=false;if(cloudQueued&&!cloudConflict){cloudQueued=false;cloudWrite()}}
 }
 function cloudSave(){
  if(!cloudReady)return;
@@ -220,15 +224,15 @@ function cloudSave(){
 }
 function cloudShowLogin(message='Ingresá a tu cuenta para acceder a tus vehículos y gastos.'){cloudReady=false;cloudGate.hidden=false;cloudImport.hidden=true;cloudLogin.hidden=false;cloudSubtitle.textContent=message;cloudMessage.textContent='';}
 function cloudEnter(data){if(!data||!Array.isArray(data.vehicles)||!data.vehicles.length){data=defaultGarage()}state=data;if(!state.vehicles.some(v=>v.id===state.selectedVehicleId))state.selectedVehicleId=state.vehicles[0].id;cloudReady=true;cloudGate.hidden=true;render();cloudWatch();document.getElementById('cloudStatus').textContent='Conectado';document.getElementById('headerSync').textContent='Firebase conectado';document.getElementById('cloudIdentity').textContent=cloudUser?.email||''}
-async function cloudLoad(user){if(cloudSnapshot){cloudSnapshot();cloudSnapshot=null}clearTimeout(cloudTimer);cloudDirty=false;cloudQueued=false;cloudVersion=0;cloudReady=false;cloudUser=user;cloudGate.hidden=true;cloudLogin.hidden=true;cloudImport.hidden=true;cloudSubtitle.textContent='Cargando tus vehículos…';try{const doc=await cloudDoc().get();if(doc.exists&&doc.data().state){cloudEnter(doc.data().state);return}cloudGate.hidden=false;cloudImport.hidden=false;cloudSubtitle.textContent='Configurá tu garaje';document.getElementById('cloudImportText').textContent='No hay datos en línea en esta cuenta. Si ya usaste Rodme Garage en este navegador, podés importar sus registros existentes. Elegí una opción:'}catch(e){cloudGate.hidden=false;cloudSubtitle.textContent='No se pudieron cargar tus datos';cloudLogin.hidden=false;cloudMessage.textContent=cloudError(e);}}
-async function cloudInitial(data){cloudImport.hidden=true;cloudSubtitle.textContent='Creando tu garaje…';try{await cloudDoc().set({state:data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});cloudEnter(data);localStorage.removeItem(KEY)}catch(e){cloudImport.hidden=false;document.getElementById('cloudMessageImport').textContent=cloudError(e)}}
+async function cloudLoad(user){if(cloudSnapshot){cloudSnapshot();cloudSnapshot=null}clearTimeout(cloudTimer);cloudDirty=false;cloudQueued=false;cloudVersion=0;cloudRevision=0;cloudConflict=false;cloudReady=false;cloudUser=user;cloudGate.hidden=true;cloudLogin.hidden=true;cloudImport.hidden=true;cloudSubtitle.textContent='Cargando tus vehículos…';try{const doc=await cloudDoc().get();if(doc.exists&&doc.data().state){cloudRevision=Number(doc.data().revision||0);cloudEnter(doc.data().state);return}cloudGate.hidden=false;cloudImport.hidden=false;cloudSubtitle.textContent='Configurá tu garaje';document.getElementById('cloudImportText').textContent='No hay datos en línea en esta cuenta. Si ya usaste Rodme Garage en este navegador, podés importar sus registros existentes. Elegí una opción:'}catch(e){cloudGate.hidden=false;cloudSubtitle.textContent='No se pudieron cargar tus datos';cloudLogin.hidden=false;cloudMessage.textContent=cloudError(e);}}
+async function cloudInitial(data){cloudImport.hidden=true;cloudSubtitle.textContent='Creando tu garaje…';try{await cloudDoc().set({state:data,revision:1,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});cloudRevision=1;cloudEnter(data);localStorage.removeItem(KEY)}catch(e){cloudImport.hidden=false;document.getElementById('cloudMessageImport').textContent=cloudError(e)}}
 document.getElementById('cloudUseLocal').onclick=()=>cloudInitial(state);
 document.getElementById('cloudStartNew').onclick=()=>cloudInitial(defaultGarage());
 document.getElementById('cloudForm').addEventListener('submit',async e=>{e.preventDefault();cloudMessage.textContent='Ingresando…';try{await firebase.auth().signInWithEmailAndPassword(document.getElementById('cloudEmail').value.trim(),document.getElementById('cloudPassword').value)}catch(err){cloudMessage.textContent=cloudError(err)}});
 document.getElementById('cloudRegister').onclick=async()=>{cloudMessage.textContent='Creando cuenta…';try{await firebase.auth().createUserWithEmailAndPassword(document.getElementById('cloudEmail').value.trim(),document.getElementById('cloudPassword').value)}catch(err){cloudMessage.textContent=cloudError(err)}};
 document.getElementById('cloudGoogle').onclick=async()=>{cloudMessage.textContent='Conectando con Google…';try{const provider=new firebase.auth.GoogleAuthProvider();provider.setCustomParameters({prompt:'select_account'});await firebase.auth().signInWithPopup(provider);cloudMessage.textContent=''}catch(err){if(err.code==='auth/popup-blocked'||err.code==='auth/operation-not-supported-in-this-environment'){try{await firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());return}catch(e){err=e}}cloudMessage.textContent=cloudError(err)}};
 async function checkFirebaseConnection(){const status=document.getElementById('cloudTestResult');if(!status)return;status.textContent='Comprobando acceso al servidor…';try{if(!cloudUser||!cloudDb)throw Error('No hay sesión activa');const snap=await cloudDoc().get({source:'server'});status.textContent=snap.exists?'Conexión correcta: Firestore responde y encontré tus registros en línea.':'Conexión correcta, pero todavía no hay un registro de garaje guardado en Firestore.';if(cloudDirty)status.textContent+=' Hay cambios sin confirmar; pulsá Reintentar.'}catch(e){status.textContent='No se pudo consultar Firestore: '+cloudError(e)}}
-function retryCloudSave(){if(!cloudReady)return;clearTimeout(cloudTimer);cloudQueued=false;cloudWrite()}
+function retryCloudSave(){if(!cloudReady)return;if(cloudConflict){alert('Primero descargá un respaldo JSON. Existe un conflicto de datos entre dispositivos.');return}clearTimeout(cloudTimer);cloudQueued=false;cloudWrite()}
 window.addEventListener('online',()=>{if(cloudReady&&cloudDirty)retryCloudSave()});
 async function cloudLogout(){clearTimeout(cloudTimer);if(cloudDirty&&cloudReady)await cloudWrite();if(cloudSnapshot){cloudSnapshot();cloudSnapshot=null}cloudReady=false;cloudUser=null;state=defaultGarage();document.getElementById('headerSync').textContent='Iniciá sesión para sincronizar';document.getElementById('cloudIdentity').textContent='';await firebase.auth().signOut();cloudShowLogin()}
 document.getElementById('root').innerHTML='<div style="padding:40px 20px;text-align:center;color:#879298">Preparando tu garaje…</div>';

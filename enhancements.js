@@ -1,0 +1,77 @@
+/* Rodme Garage: módulos complementarios. Mantiene el formato actual de Firestore. */
+(()=>{
+const extraPages=['Expediente','Kilometraje','Repuestos','Inspección 4x4','Calendario','Viajes','Papelera'];
+for(const p of extraPages)if(!pages.includes(p))pages.splice(pages.indexOf('Reportes'),0,p);
+const oldRender=render,oldSave=save,oldRemove=removeEntry,oldDelete=deleteVehicle;
+const id=()=>Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
+const sum=a=>a.reduce((n,x)=>n+Number(x.amount||0),0);
+const safeDate=d=>/^\d{4}-\d{2}-\d{2}$/.test(d||'');
+const v=()=>active();
+function fields(event){event.preventDefault();return Object.fromEntries(new FormData(event.target).entries())}
+function ensure(){state.trash??=[];for(const car of state.vehicles){car.parts??=[];car.trips??=[];car.inspections??=[];car.repairFiles??=[];car.mileageReadings??=[];}}
+function put(){oldSave();render()}
+function card(title,body){return '<section class="card"><h3>'+title+'</h3>'+body+'</section>'}
+function empty(message){return '<p class="muted">'+message+'</p>'}
+function btn(action,index,title='Eliminar'){return '<button class="danger" type="button" onclick="rgRemove(\''+action+'\','+index+')">'+title+'</button>'}
+function row(title,description,actions=''){return '<div class="record"><div><strong>'+esc(title)+'</strong><p class="muted">'+esc(description)+'</p></div><div class="row">'+actions+'</div></div>'}
+function lastKm(){return Math.max(0,Number(v().odometer)||0,...(v().entries||[]).map(e=>Number(e.km)||0),...(v().mileageReadings||[]).map(e=>Number(e.km)||0))}
+function chart(series){const max=Math.max(1,...series.map(x=>x.value));return '<div class="rg-chart">'+series.map(x=>'<div class="rg-chart-line"><span>'+esc(x.label)+'</span><div class="rg-chart-track"><i style="width:'+Math.round(100*x.value/max)+'%"></i></div><strong>'+money(x.value)+'</strong></div>').join('')+'</div>'}
+function fillExtra(){
+ensure();const car=v();let html='';
+if(tab==='Expediente'){
+ const entries=car.entries.filter(e=>['Reparación','Repuesto','Mantenimiento'].includes(e.kind)).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+ html='<h2>Expediente mecánico</h2><p class="muted">Historial unificado de reparaciones, garantías y observaciones. Los importes se registran una sola vez desde Gastos.</p>'+card('Reparaciones registradas',entries.length?entries.map(e=>row(e.description||e.kind,[e.date,e.vendor,money(e.amount),e.km?e.km+' km':''].filter(Boolean).join(' · '))).join(''):empty('Todavía no se registraron reparaciones.'))+card('Notas y garantías por reparación','<form onsubmit="rgAdd(event,\'repairFiles\')"><div class="cols"><div class="field"><label>Trabajo o pieza</label><input name="name" required maxlength="140"></div><div class="field"><label>Fin de garantía</label><input name="date" type="date"></div><div class="field"><label>Enlace HTTPS del comprobante o fotografía (opcional)</label><input name="url" type="url" placeholder="https://"></div><div class="field"><label>Notas, diagnóstico o número de factura</label><input name="notes" maxlength="400"></div></div><button>Guardar anotación</button></form>'+(car.repairFiles.map((x,i)=>row(x.name,[x.date?'Garantía hasta '+x.date:'',x.notes].filter(Boolean).join(' · '),(x.url?'<a href="'+esc(x.url)+'" target="_blank" rel="noopener noreferrer">Ver archivo</a> ':'')+btn('repairFiles',i))).join('')||empty('Sin anotaciones.'))+'<p class="tiny">Por ahora se guardan enlaces HTTPS; no se suben archivos privados directamente a Firebase Storage.</p>');
+}
+if(tab==='Kilometraje'){
+ let readings=[...car.mileageReadings,...car.entries.filter(e=>Number(e.km)>0).map(e=>({date:e.date,km:Number(e.km),name:e.kind}))].sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+ html='<h2>Historial de kilometraje</h2>'+card('Última lectura conocida','<div class="metric">'+lastKm().toLocaleString('es-CR')+' km</div><form onsubmit="rgAddMileage(event)"><div class="cols"><div class="field"><label>Fecha</label><input type="date" name="date" required value="'+today()+'"></div><div class="field"><label>Kilometraje</label><input type="number" name="km" required min="0"></div></div><button>Guardar lectura</button></form>')+card('Evolución y lecturas',readings.length?readings.map(x=>row(x.date,Number(x.km).toLocaleString('es-CR')+' km · '+(x.name||'Lectura manual'))).join(''):empty('Todavía no hay kilometrajes registrados.'));
+}
+if(tab==='Repuestos'){
+ html='<h2>Inventario de repuestos</h2>'+card('Agregar repuesto','<form onsubmit="rgAdd(event,\'parts\')"><div class="cols"><div class="field"><label>Repuesto o consumible</label><input name="name" required></div><div class="field"><label>Marca / número de parte</label><input name="partNumber"></div><div class="field"><label>Cantidad</label><input name="quantity" type="number" min="0" step="1" value="1"></div><div class="field"><label>Precio unitario (₡)</label><input name="price" type="number" min="0" step=".01"></div><div class="field"><label>Fin de garantía</label><input name="date" type="date"></div><div class="field"><label>Notas</label><input name="notes"></div></div><button>Guardar repuesto</button></form>')+card('Repuestos almacenados',car.parts.length?car.parts.map((x,i)=>row(x.name,[x.partNumber,'Cantidad: '+x.quantity,x.price?money(x.price):'',x.date?'Garantía: '+x.date:''].filter(Boolean).join(' · '),btn('parts',i))).join(''):empty('No tenés repuestos registrados.'));
+}
+if(tab==='Inspección 4x4'){
+ const items=['Llantas, presión y repuesto','Frenos','Suspensión y dirección','Fugas de aceite y refrigerante','Caja de transferencia y diferenciales','Luces y batería','Herramientas y equipo de emergencia','Cinturones y documentación'];
+ const checks=items.map((t,i)=>'<label class="rg-check"><input type="checkbox" name="c'+i+'"> '+esc(t)+'</label>').join('');
+ html='<h2>Inspección 4x4</h2>'+card('Nueva lista de verificación','<p class="muted">Marcá lo que revisaste antes de salir. Los puntos sin marcar quedarán registrados como pendientes.</p><form onsubmit="rgInspection(event)">'+checks+'<div class="field"><label>Observaciones</label><textarea name="notes" rows="2"></textarea></div><button>Guardar inspección de hoy</button></form>')+card('Inspecciones anteriores',car.inspections.length?car.inspections.slice().reverse().map((x,i)=>row(x.date,x.checked+'/'+items.length+' revisiones · '+(x.notes||'Sin observaciones'))).join(''):empty('Todavía no hay inspecciones.'));
+}
+if(tab==='Calendario'){
+ const events=[...(car.docs||[]).filter(x=>safeDate(x.date)).map(x=>({...x,type:'Documento'})),...(car.servicePlans||[]).filter(x=>safeDate(x.date)&&!x.done).map(x=>({...x,type:'Mantenimiento'})),...(car.repairFiles||[]).filter(x=>safeDate(x.date)).map(x=>({...x,type:'Garantía'}))].sort((a,b)=>a.date.localeCompare(b.date));
+ html='<h2>Calendario vehicular</h2><p class="muted">Reúne fechas de documentos, servicios y garantías ya registradas. No tenés que ingresarlas de nuevo.</p>'+card('Fechas importantes',events.length?events.map(x=>row(x.date,x.type+' · '+x.name+(x.date<today()?' · VENCIDO':''))).join(''):empty('Agregá fechas en Documentos, Mantenimiento o Expediente.'))+'<button onclick="rgNotifications()">Activar avisos del navegador</button><p class="tiny">Los avisos del navegador requieren permiso y que la aplicación esté abierta. No son notificaciones push en segundo plano.</p>';
+}
+if(tab==='Viajes'){
+ html='<h2>Registro de viajes</h2>'+card('Nuevo recorrido','<form onsubmit="rgAddTrip(event)"><div class="cols"><div class="field"><label>Fecha</label><input type="date" name="date" required value="'+today()+'"></div><div class="field"><label>Destino o ruta</label><input name="name" required></div><div class="field"><label>Kilómetros recorridos</label><input name="km" type="number" min="0" step=".1" required></div><div class="field"><label>Gasto de viaje (₡)</label><input name="amount" type="number" min="0" step=".01" value="0" required></div><div class="field"><label>Notas (peajes, combustible, estacionamiento)</label><input name="notes"></div></div><button>Guardar viaje</button></form><p class="tiny">Los gastos de viajes no se agregan automáticamente a Gastos para evitar doble contabilización.</p>')+card('Recorridos',car.trips.length?car.trips.slice().reverse().map((x,i)=>row(x.name,x.date+' · '+x.km+' km · '+money(x.amount)+' · '+(x.notes||''))).join(''):empty('No hay viajes registrados.'));
+}
+if(tab==='Papelera'){
+ html='<h2>Papelera y recuperación</h2><p class="muted">Recuperá los movimientos eliminados sin volver a ingresarlos.</p>'+card('Movimientos eliminados',state.trash.filter(x=>x.type==='entry').length?state.trash.map((x,i)=>x.type==='entry'?row(x.item.description||'Movimiento',x.deletedAt+' · '+money(x.item.amount),'<button onclick="rgRestore('+i+')">Restaurar</button> '+btn('trash',i,'Eliminar definitivamente')):'').join(''):empty('La papelera está vacía.'))+'<p class="tiny">La papelera de registros se sincroniza en la misma cuenta de Firebase. Los registros borrados antes de esta actualización no se pueden recuperar aquí.</p>';
+}
+if(tab==='Reportes'){
+ const monthly={};car.entries.forEach(e=>{const key=String(e.date||'').slice(0,7);if(safeDate(e.date))monthly[key]=(monthly[key]||0)+Number(e.amount||0)});
+ const series=Object.entries(monthly).sort((a,b)=>a[0].localeCompare(b[0])).slice(-12).map(([label,value])=>({label,value}));
+ html=card('Evolución de gastos por mes',series.length?chart(series):empty('No hay movimientos fechados.'));
+}
+if(tab==='Respaldos'){
+ html=card('Copias automáticas en este navegador','<p class="muted">Al realizar cambios se conserva como máximo una copia diaria, hasta cinco días. Estos respaldos locales NO sustituyen Firestore ni se comparten entre dispositivos.</p><div id="rgBackupStatus"></div><button class="secondary" onclick="rgDownloadLocalBackup()">Descargar copia automática reciente</button>');
+}
+if(tab==='Configuración'){
+ html=card('Privacidad y acceso familiar','<p>Tu garaje sigue siendo privado por cuenta. Para compartirlo de forma segura hacen falta invitaciones, roles y reglas de Firestore específicas. No hemos habilitado acceso a terceros.</p><p class="muted">No compartás tu contraseña. En una próxima etapa deberá implementarse un sistema de invitaciones verificadas antes de activar usuarios familiares.</p>');
+}
+if(html){const root=document.getElementById('root');if(extraPages.includes(tab))root.innerHTML=html;else root.insertAdjacentHTML('beforeend','<div class="rg-extra">'+html+'</div>');}
+if(tab==='Respaldos'){const el=document.getElementById('rgBackupStatus');if(el)el.textContent='Copias locales disponibles: '+backupList().length;}
+if(tab==='Inicio')noticeDates();
+}
+render=function(){oldRender();fillExtra();};
+function backupList(){try{return JSON.parse(localStorage.getItem('rodme-backups-v1')||'[]')}catch{return []}}
+function snapshotLocal(){try{const list=backupList(),day=today();if(!list.some(x=>x.day===day)){list.unshift({day,data:JSON.stringify(state)});localStorage.setItem('rodme-backups-v1',JSON.stringify(list.slice(0,5)))}}catch(e){console.warn('No se pudo crear el respaldo local',e)}}
+save=function(){ensure();snapshotLocal();oldSave()};
+removeEntry=function(entryId){const item=v().entries.find(e=>Number(e.id)===Number(entryId));if(!item)return;if(!confirm('¿Mover este registro a la papelera?'))return;ensure();state.trash.unshift({id:id(),type:'entry',vehicleId:v().id,item:structuredClone(item),deletedAt:today()});v().entries=v().entries.filter(e=>Number(e.id)!==Number(entryId));put()};
+window.rgRestore=i=>{ensure();const x=state.trash[i];if(!x||x.type!=='entry')return;const car=state.vehicles.find(y=>y.id===x.vehicleId);if(!car)return alert('Ese vehículo ya no existe.');if(!car.entries.some(y=>Number(y.id)===Number(x.item.id)))car.entries.unshift(x.item);state.trash.splice(i,1);put()};
+window.rgRemove=(collection,i)=>{ensure();const list=collection==='trash'?state.trash:v()[collection];if(!Array.isArray(list)||!list[i])return;if(!confirm('¿Eliminar este elemento?'))return;list.splice(i,1);put()};
+window.rgAdd=(ev,collection)=>{const x=fields(ev);if(x.url&&!/^https:\/\//i.test(x.url))return alert('Solo enlaces HTTPS.');ensure();v()[collection].push({...x,id:id()});put()};
+window.rgAddMileage=ev=>{const x=fields(ev),km=Number(x.km);if(!safeDate(x.date)||!Number.isFinite(km)||km<0)return alert('Datos inválidos');if(km<lastKm()&&!confirm('Es un kilometraje menor que uno registrado. ¿Guardar de todos modos?'))return;ensure();v().mileageReadings.push({...x,km,id:id(),name:'Lectura manual'});v().odometer=String(Math.max(km,Number(v().odometer)||0));put()};
+window.rgAddTrip=ev=>{const x=fields(ev);if(!Number.isFinite(+x.km)||Number(x.km)<0||!Number.isFinite(+x.amount)||Number(x.amount)<0)return alert('Valores inválidos');ensure();v().trips.push({...x,id:id(),km:+x.km,amount:+x.amount});put()};
+window.rgInspection=ev=>{const x=fields(ev);ensure();v().inspections.push({id:id(),date:today(),checked:Array.from({length:8},(_,i)=>x['c'+i]).filter(Boolean).length,notes:x.notes||''});put()};
+window.rgDownloadLocalBackup=()=>{const data=backupList()[0];if(!data)return alert('No hay una copia automática todavía.');download('rodme-respaldo-local-'+data.day+'.json',data.data,'application/json')};
+window.rgNotifications=async()=>{if(!('Notification'in window))return alert('Este navegador no permite notificaciones.');const permission=await Notification.requestPermission();if(permission==='granted')alert('Avisos permitidos mientras la aplicación esté abierta.');else alert('No se autorizó el permiso.')};
+function noticeDates(){const ds=(v().docs||[]).filter(x=>safeDate(x.date)&&x.date>=today()&&x.date<=new Date(Date.now()+7*86400000).toISOString().slice(0,10));if(ds.length){const root=document.getElementById('root');root.insertAdjacentHTML('afterbegin','<div class="notice"><strong>Próximos vencimientos:</strong> '+ds.map(x=>esc(x.name)+' ('+esc(x.date)+')').join(', ')+'</div>');}}
+const style=document.createElement('style');style.textContent='.rg-chart-line{display:grid;grid-template-columns:85px 1fr 110px;gap:12px;align-items:center;margin:10px 0;font-size:13px}.rg-chart-track{height:16px;background:#eceef0;border-radius:10px;overflow:hidden}.rg-chart-track i{display:block;height:100%;background:#c71c26;border-radius:10px}.rg-check{display:block;padding:12px;margin:5px 0;background:#f4f6f7;border-radius:8px;color:#232629}.rg-check input{width:20px;min-height:20px;vertical-align:middle}.rg-extra{margin-top:30px}.rg-extra .card{margin-bottom:15px}@media(max-width:600px){.rg-chart-line{grid-template-columns:65px 1fr 85px;gap:6px;font-size:10px}.rg-extra{margin-top:20px}}';document.head.appendChild(style);
+})();

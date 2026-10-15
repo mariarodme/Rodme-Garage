@@ -278,6 +278,78 @@ body>main{padding:12px 13px 96px!important}
 #mobileDock{box-shadow:0 -4px 22px #14212c1a!important}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style><style id="rg-mobile-redesign-v2">
+/* Diseño móvil refinado: navegación limpia, tarjetas legibles y formularios accesibles */
+html,body{max-width:100%;overflow-x:clip}
+@media(max-width:760px){
+header{min-height:0!important;padding:12px 15px!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:11px!important}
+header .brandmark{gap:10px!important;min-width:0}
+header .brandicon{width:42px!important;height:42px!important;flex:none}
+header h1{font-size:23px!important;line-height:1.1!important}
+header small{font-size:9px!important;letter-spacing:.6px!important}
+.vehiclebar{width:100%!important;display:flex!important;align-items:center!important;gap:9px!important}
+.vehiclebar label{flex:none;font-size:12px!important}
+.vehiclebar select{flex:1!important;min-width:0!important;max-width:none!important;width:auto!important;height:44px!important}
+.vehiclebar .pill{display:none!important}
+#rgActionBar{display:grid!important;grid-template-columns:1fr 1fr 46px!important;gap:8px!important;padding:8px 13px 11px!important}
+#rgActionBar button{width:100%!important;margin:0!important;min-height:43px!important;padding:9px 6px!important;font-size:13px!important;border-radius:10px!important}
+nav{position:relative!important;top:auto!important;overflow:visible!important;padding:0 9px!important;border-bottom:1px solid #e8e9ec!important}
+nav .rg-nav-inner{display:flex!important;justify-content:space-between!important;width:100%!important;min-width:0!important;gap:2px!important}
+nav .rg-nav-group{flex:1 1 0!important;min-width:0!important}
+nav .rg-menu-button{width:100%!important;min-width:0!important;min-height:52px!important;padding:9px 2px!important;font-size:11px!important;gap:3px!important;display:flex!important;flex-direction:column!important;line-height:1.2!important;white-space:normal!important}
+nav .rg-menu-button .rg-chevron{display:none!important}
+nav .rg-menu-button span{overflow:hidden;text-overflow:ellipsis;max-width:100%}
+nav .rg-nav-sub{position:fixed!important;top:auto!important;left:12px!important;right:12px!important;min-width:0!important;max-height:55dvh!important;overflow:auto!important;border-radius:13px!important;box-shadow:0 16px 45px #11182735!important;z-index:100!important}
+body>main{width:100%!important;max-width:100%!important;margin:0!important;padding:11px 13px 108px!important}
+.hero{margin:0!important;height:auto!important;min-height:355px!important;border-radius:14px!important;padding:145px 20px 22px!important;align-items:flex-end!important;background-size:cover!important;background-position:62% center!important}
+.hero:before{background-position:62% center!important}
+.hero:after{background:linear-gradient(0deg,rgba(6,10,12,.94),rgba(6,10,12,.63) 43%,rgba(6,10,12,.02) 95%)!important}
+.hero>div:first-child{max-width:100%!important}
+.hero h2{font-size:clamp(29px,7.7vw,41px)!important;line-height:1.06!important;letter-spacing:-.8px!important;margin:8px 0 10px!important}
+.hero p{font-size:12px!important;line-height:1.45!important;margin:7px 0 13px!important}
+.hero small{font-size:10px!important;letter-spacing:1px!important}
+.hero button{min-height:43px!important;font-size:12px!important;padding:10px 14px!important}
+.hero+.grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;margin:0 0 18px!important;padding:13px 5px!important;gap:0!important;border-radius:0 0 12px 12px!important}
+.hero+.grid>.card{min-width:0!important;padding:7px 8px!important;margin:0!important}
+.hero+.grid .metric{font-size:clamp(18px,5vw,25px)!important;overflow-wrap:anywhere}
+.hero+.grid .statslabel{font-size:9px!important;line-height:1.3!important;letter-spacing:0!important;overflow-wrap:anywhere}
+.hero+.grid .tiny{font-size:9px!important}
+.hero+.grid .stat-icon{display:none!important}
+.grid:not(.hero+.grid){grid-template-columns:1fr!important;gap:11px!important}
+.quicklinks{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+.quick{min-height:94px!important;padding:13px!important;font-size:13px!important;gap:7px!important}
+.quick .ico{font-size:21px!important}
+.card{margin-bottom:12px!important;padding:16px!important;min-width:0!important;border-radius:13px!important}
+.card h3{font-size:19px!important;line-height:1.25!important}
+main>h2{font-size:27px!important;margin:14px 0 18px!important}
+.section-header{margin:23px 0 12px!important}
+.section-header h3{font-size:21px!important}
+.metric{font-size:29px!important}
+form .cols{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:0!important}
+.field{min-width:0!important;margin:9px 0!important}
+.field label{font-size:12px!important}
+input,textarea,select{min-width:0!important;width:100%!important;font-size:16px!important;min-height:45px!important}
+input[type=checkbox]{width:auto!important;min-height:0!important}
+.row{gap:9px!important}
+.record{align-items:flex-start!important;flex-wrap:wrap!important}
+.record>div:first-child{flex:1 1 190px!important}
+.record>.row{max-width:100%!important}
+.scroll{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;max-width:100%!important}
+table{min-width:620px!important}
+th,td{padding:11px 9px!important;font-size:12px!important}
+.recordFilters{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+.recordFilters label:first-child{grid-column:1/-1}
+.recordFilters button{grid-column:1/-1}
+#mobileDock{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;position:fixed!important;bottom:0!important;left:0!important;right:0!important;z-index:150!important;padding-bottom:env(safe-area-inset-bottom)!important;box-shadow:0 -4px 22px #19232b1a!important}
+#mobileDock button{min-height:61px!important;padding:7px 1px!important;font-size:21px!important}
+#mobileDock button small{font-size:10px!important;white-space:nowrap!important}
+#cloudAccount{padding:8px 13px!important;gap:6px!important}
+#cloudStatus{margin-left:0!important}
+#cloudIdentity{font-size:11px!important}
+footer{padding-bottom:14px!important}
+}
+@media(min-width:761px) and (max-width:1100px){body>main{max-width:100%!important;padding:18px 23px 76px!important}.hero{padding:38px!important}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:370px){nav .rg-menu-button{font-size:10px!important}.hero h2{font-size:28px!important}.hero+.grid .metric{font-size:17px!important}}
 </style></head><body><header><div class="brandmark"><div class="brandicon">R</div><div><h1>RODME GARAGE</h1><small>MI GARAJE · CONTROL VEHICULAR</small></div></div><div class="vehiclebar"><label for="vehicleSelect">Vehículo:</label><select id="vehicleSelect" class="selector" onchange="selectVehicle(this.value)"></select><span class="pill" id="headerSync">Comprobando conexión…</span></div></header><nav id="nav"></nav><main id="root"></main><div id="mobileDock" aria-label="Navegación rápida"><button onclick="go('Inicio')">⌂<small>Inicio</small></button><button onclick="go('Vehículos')">🚙<small>Garaje</small></button><button class="add" onclick="go('Gasolina')">＋<small>Gasolina</small></button><button onclick="go('Gastos')">▤<small>Gastos</small></button><button onclick="go('Configuración')">⚙<small>Ajustes</small></button></div><footer>Rodme Garage · Versión 16.10.2026 · Incluye Talleres, Reportes y Mantenimiento preventivo · Tus registros se sincronizan con Firebase.</footer>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>

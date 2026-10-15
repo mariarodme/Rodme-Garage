@@ -137,6 +137,7 @@ const a=prompt('Monto en colones:',String(e.amount||0));if(a===null)return;
 const amount=Number(a);if(!Number.isFinite(amount)||amount<0)return alert('Monto inválido');
 const date=prompt('Fecha (AAAA-MM-DD):',e.date||today());if(date===null)return;
 if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return alert('Fecha inválida');
+if(e.kind==='Gasolina'){const liters=prompt('Litros cargados:',String(e.liters||''));if(liters===null)return;const km=prompt('Kilometraje:',String(e.km||''));if(km===null)return;if(!(Number(liters)>0)||!(Number(km)>=0))return alert('Litros o kilometraje inválidos');e.liters=Number(liters);e.km=Number(km)}
 e.description=d.trim();e.amount=amount;e.date=date;e.updatedAt=new Date().toISOString();save();render();
 }
 function reportPeriod(month){

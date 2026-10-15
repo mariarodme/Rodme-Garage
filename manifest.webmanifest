@@ -1,0 +1,18 @@
+{
+  "name": "Rodme Garage - Mis vehículos",
+  "short_name": "Rodme Garage",
+  "description": "Control privado de gasolina, gastos, vehículos y mantenimiento",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#c71c26",
+  "icons": [
+    {
+      "src": "app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -67,24 +67,71 @@ document.getElementById('root').innerHTML=s}
 function selectVehicle(id){if(!state.vehicles.some(v=>v.id===id))return;state.selectedVehicleId=id;save();render()}function addVehicle(ev){let o=formObj(ev);let v=newVehicle(o.name.trim(),o.brand,o.model,o.year,o.plate);state.vehicles.push(v);state.selectedVehicleId=v.id;save();go('Inicio')}function deleteVehicle(id){if(state.vehicles.length<2)return;if(!confirm('¿Eliminar este vehículo y TODOS sus registros? Esta acción no se puede deshacer. Descargá antes un respaldo.'))return;state.vehicles=state.vehicles.filter(v=>v.id!==id);state.selectedVehicleId=state.vehicles[0].id;save();render()}function go(p){tab=p;render();window.scrollTo(0,0)}function today(){let d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}function formObj(ev){ev.preventDefault();return Object.fromEntries(new FormData(ev.target).entries())}function addExpense(ev){let o=formObj(ev);active().entries.unshift({...o,amount:Number(o.amount),id:Date.now()+Math.random()});save();render()}function addFuel(ev){let o=formObj(ev);active().entries.unshift({...o,kind:'Gasolina',description:'Carga de gasolina',amount:Number(o.amount),km:Number(o.km),liters:Number(o.liters),full:o.full==='yes',id:Date.now()+Math.random()});save();render()}function setOdometer(ev){ev.preventDefault();active().odometer=document.getElementById('odometer').value;save();render()}function addTask(ev){let o=formObj(ev);active().tasks.push({id:Date.now(),name:o.name,status:'Pendiente',notes:''});save();render()}function updateTask(i,field,value){active().tasks[i][field]=value;save();if(field==='status')render()}function addDoc(ev){let o=formObj(ev);active().docs=active().docs||[];active().docs.push(o);save();render()}function deleteDoc(i){if(!confirm('¿Eliminar este recordatorio?'))return;active().docs.splice(i,1);save();render()}function removeEntry(id){if(!confirm('¿Eliminar este registro?'))return;active().entries=active().entries.filter(x=>x.id!==id);save();render()}function table(items){return `<div class="card"><div class="row"><h3>Registros (${items.length})</h3><span class="pill">Total: ${money(items.reduce((s,x)=>s+Number(x.amount||0),0))}</span></div><div class="scroll"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th>Monto</th><th></th></tr></thead><tbody>${items.length?items.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.kind)}</td><td>${esc(x.description)}${x.liters?` · ${esc(x.liters)} L`:''}${x.km?` · ${esc(x.km)} km`:''}${x.vendor?`<br><span class="muted">${esc(x.vendor)}</span>`:''}</td><td>${money(x.amount)}</td><td><button class="danger" onclick="removeEntry(${Number(x.id)})">Eliminar</button></td></tr>`).join(''):'<tr><td colspan="5" class="muted">No hay registros todavía.</td></tr>'}</tbody></table></div></div>`}function download(name,data,type){let a=document.createElement('a');let u=URL.createObjectURL(new Blob([data],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),2000)}function backup(){download('rodme-garage-respaldo-'+today()+'.json',JSON.stringify(state,null,2),'application/json')}function csv(){let fields=['date','kind','description','amount','vendor','km','liters','full'];let rows=[['Vehículo',...fields].join(';'),...state.vehicles.flatMap(v=>v.entries.map(o=>[v.name,...fields.map(f=>'"'+String(o[f]??'').replace(/"/g,'""')+'"')].join(';')))] ;download('rodme-garage-movimientos-'+today()+'.csv','\uFEFF'+rows.join('\r\n'),'text/csv;charset=utf-8')}async function restore(){let f=document.getElementById('import').files[0];if(!f)return alert('Seleccioná un archivo JSON.');try{let next=JSON.parse(await f.text());if(!Array.isArray(next.vehicles)||!next.vehicles.length||next.vehicles.some(v=>!Array.isArray(v.entries)||!Array.isArray(v.tasks)||!Array.isArray(v.docs)))throw Error('Formato inválido');if(!confirm('Se reemplazarán todos los datos actuales. ¿Continuar?'))return;state=next;state.selectedVehicleId=active().id;save();render();alert('Datos restaurados.')}catch(e){alert('No se pudo importar el archivo: '+e.message)}}render();
 
 const firebaseConfig={apiKey:"AIzaSyA53OoXZqpn3IqRaL98HcPs3HgZLRyPKMU",authDomain:"rodme-garage.firebaseapp.com",projectId:"rodme-garage",storageBucket:"rodme-garage.firebasestorage.app",messagingSenderId:"431305257232",appId:"1:431305257232:web:747b3052c3f1103aa73595"};
-let cloudDb=null,cloudUser=null,cloudReady=false,cloudTimer=null,cloudSnapshot=null;
+let cloudDb=null,cloudUser=null,cloudReady=false,cloudTimer=null,cloudSnapshot=null,cloudDirty=false,cloudWriting=false,cloudQueued=false;
 const cloudGate=document.getElementById('cloudGate'),cloudLogin=document.getElementById('cloudLogin'),cloudImport=document.getElementById('cloudImport'),cloudSubtitle=document.getElementById('cloudSubtitle');
 const cloudMessage=document.getElementById('cloudMessage');
 function cloudError(e){return ({'auth/invalid-credential':'Correo o contraseña incorrectos.','auth/email-already-in-use':'El correo ya está registrado.','auth/weak-password':'La contraseña debe tener al menos 6 caracteres.','auth/unauthorized-domain':'Agregá el dominio de GitHub Pages a Authentication → Settings → Authorized domains.','auth/operation-not-allowed':'Activá el proveedor correspondiente en Firebase Authentication.','auth/account-exists-with-different-credential':'Ya existe una cuenta con ese correo mediante otro método. Iniciá sesión con el método anterior antes de vincular Google.','auth/popup-closed-by-user':'Se cerró la ventana de Google sin iniciar sesión.','permission-denied':'Firestore denegó el acceso. Revisá las reglas de seguridad.','unavailable':'No hay conexión disponible. Volvé a intentarlo.'})[e.code]||('No se pudo completar: '+(e.message||e.code||'Error desconocido'))}
 function defaultGarage(){const v=newVehicle('Mi Jeep Rubicon','Jeep','Wrangler Rubicon','2007','',true);return {vehicles:[v],selectedVehicleId:v.id}}
 function cloudDoc(){return cloudDb.collection('users').doc(cloudUser.uid).collection('garage').doc('main')}
-async function cloudWrite(){if(!cloudReady||!cloudUser)return;try{await cloudDoc().set({state:JSON.parse(JSON.stringify(state)),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});document.getElementById('cloudStatus').textContent='Guardado en línea';document.getElementById('headerSync').textContent='Sincronizado con Firebase'}catch(e){document.getElementById('cloudStatus').textContent='Error de sincronización';document.getElementById('headerSync').textContent='Error al guardar en Firebase';console.error('Firebase:',e)}}
-function cloudSave(){if(!cloudReady)return;document.getElementById('cloudStatus').textContent='Guardando…';document.getElementById('headerSync').textContent='Sincronizando…';clearTimeout(cloudTimer);cloudTimer=setTimeout(cloudWrite,600)}
+function cloudWatch(){
+  if(cloudSnapshot)cloudSnapshot();
+  cloudSnapshot=cloudDoc().onSnapshot({includeMetadataChanges:true},snap=>{
+    if(!cloudReady||!snap.exists||!snap.data().state)return;
+    if(snap.metadata.hasPendingWrites)return;
+    if(cloudDirty||cloudWriting)return;
+    const incoming=snap.data().state;
+    if(JSON.stringify(incoming)!==JSON.stringify(state)){
+      state=incoming;
+      if(!state.vehicles.some(v=>v.id===state.selectedVehicleId))state.selectedVehicleId=state.vehicles[0].id;
+      render();
+    }
+    document.getElementById('cloudStatus').textContent='Actualizado en todos tus dispositivos';
+    document.getElementById('headerSync').textContent='Sincronizado con Firebase';
+  },e=>{
+    document.getElementById('cloudStatus').textContent='Error al escuchar cambios';
+    document.getElementById('headerSync').textContent='Revisá la conexión';
+    console.error('Firestore listener:',e)
+  });
+}
+async function cloudWrite(){
+ if(!cloudReady||!cloudUser)return;
+ if(cloudWriting){cloudQueued=true;return}
+ cloudWriting=true;cloudDirty=false;
+ const snapshot=JSON.parse(JSON.stringify(state));
+ try{
+  await cloudDoc().set({state:snapshot,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+  if(!cloudDirty&&!cloudQueued){
+   document.getElementById('cloudStatus').textContent='Guardado en línea';
+   document.getElementById('headerSync').textContent='Sincronizado con Firebase';
+  }
+ }catch(e){
+  cloudDirty=true;
+  document.getElementById('cloudStatus').textContent='Error de sincronización';
+  document.getElementById('headerSync').textContent='No guardado · Reintentar';
+  console.error('Firebase:',e);
+ }finally{
+  cloudWriting=false;
+  if(cloudQueued){cloudQueued=false;cloudWrite()}
+ }
+}
+function cloudSave(){
+ if(!cloudReady)return;
+ cloudDirty=true;
+ document.getElementById('cloudStatus').textContent='Guardando…';
+ document.getElementById('headerSync').textContent='Sincronizando…';
+ clearTimeout(cloudTimer);
+ cloudTimer=setTimeout(cloudWrite,400);
+}
 function cloudShowLogin(message='Ingresá a tu cuenta para acceder a tus vehículos y gastos.'){cloudReady=false;cloudGate.hidden=false;cloudImport.hidden=true;cloudLogin.hidden=false;cloudSubtitle.textContent=message;cloudMessage.textContent='';}
-function cloudEnter(data){if(!data||!Array.isArray(data.vehicles)||!data.vehicles.length){data=defaultGarage()}state=data;if(!state.vehicles.some(v=>v.id===state.selectedVehicleId))state.selectedVehicleId=state.vehicles[0].id;cloudReady=true;cloudGate.hidden=true;render();document.getElementById('cloudStatus').textContent='Conectado';document.getElementById('headerSync').textContent='Firebase conectado';document.getElementById('cloudIdentity').textContent=cloudUser?.email||''}
-async function cloudLoad(user){clearTimeout(cloudTimer);cloudReady=false;cloudUser=user;cloudGate.hidden=false;cloudLogin.hidden=true;cloudImport.hidden=true;cloudSubtitle.textContent='Cargando tus vehículos…';try{const doc=await cloudDoc().get();if(doc.exists&&doc.data().state){cloudEnter(doc.data().state);return}cloudImport.hidden=false;cloudSubtitle.textContent='Configurá tu garaje';document.getElementById('cloudImportText').textContent='No hay datos en línea en esta cuenta. Si ya usaste Rodme Garage en este navegador, podés importar sus registros existentes. Elegí una opción:'}catch(e){cloudSubtitle.textContent='No se pudieron cargar tus datos';cloudLogin.hidden=false;cloudMessage.textContent=cloudError(e);}}
+function cloudEnter(data){if(!data||!Array.isArray(data.vehicles)||!data.vehicles.length){data=defaultGarage()}state=data;if(!state.vehicles.some(v=>v.id===state.selectedVehicleId))state.selectedVehicleId=state.vehicles[0].id;cloudReady=true;cloudGate.hidden=true;render();cloudWatch();document.getElementById('cloudStatus').textContent='Conectado';document.getElementById('headerSync').textContent='Firebase conectado';document.getElementById('cloudIdentity').textContent=cloudUser?.email||''}
+async function cloudLoad(user){if(cloudSnapshot){cloudSnapshot();cloudSnapshot=null}clearTimeout(cloudTimer);cloudDirty=false;cloudQueued=false;cloudReady=false;cloudUser=user;cloudGate.hidden=false;cloudLogin.hidden=true;cloudImport.hidden=true;cloudSubtitle.textContent='Cargando tus vehículos…';try{const doc=await cloudDoc().get();if(doc.exists&&doc.data().state){cloudEnter(doc.data().state);return}cloudImport.hidden=false;cloudSubtitle.textContent='Configurá tu garaje';document.getElementById('cloudImportText').textContent='No hay datos en línea en esta cuenta. Si ya usaste Rodme Garage en este navegador, podés importar sus registros existentes. Elegí una opción:'}catch(e){cloudSubtitle.textContent='No se pudieron cargar tus datos';cloudLogin.hidden=false;cloudMessage.textContent=cloudError(e);}}
 async function cloudInitial(data){cloudImport.hidden=true;cloudSubtitle.textContent='Creando tu garaje…';try{await cloudDoc().set({state:data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});cloudEnter(data);localStorage.removeItem(KEY)}catch(e){cloudImport.hidden=false;document.getElementById('cloudMessageImport').textContent=cloudError(e)}}
 document.getElementById('cloudUseLocal').onclick=()=>cloudInitial(state);
 document.getElementById('cloudStartNew').onclick=()=>cloudInitial(defaultGarage());
 document.getElementById('cloudForm').addEventListener('submit',async e=>{e.preventDefault();cloudMessage.textContent='Ingresando…';try{await firebase.auth().signInWithEmailAndPassword(document.getElementById('cloudEmail').value.trim(),document.getElementById('cloudPassword').value)}catch(err){cloudMessage.textContent=cloudError(err)}});
 document.getElementById('cloudRegister').onclick=async()=>{cloudMessage.textContent='Creando cuenta…';try{await firebase.auth().createUserWithEmailAndPassword(document.getElementById('cloudEmail').value.trim(),document.getElementById('cloudPassword').value)}catch(err){cloudMessage.textContent=cloudError(err)}};
 document.getElementById('cloudGoogle').onclick=async()=>{cloudMessage.textContent='Conectando con Google…';try{const provider=new firebase.auth.GoogleAuthProvider();provider.setCustomParameters({prompt:'select_account'});await firebase.auth().signInWithPopup(provider);cloudMessage.textContent=''}catch(err){if(err.code==='auth/popup-blocked'||err.code==='auth/operation-not-supported-in-this-environment'){try{await firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());return}catch(e){err=e}}cloudMessage.textContent=cloudError(err)}};
-async function cloudLogout(){clearTimeout(cloudTimer);if(cloudReady)await cloudWrite();cloudReady=false;cloudUser=null;state=defaultGarage();document.getElementById('headerSync').textContent='Iniciá sesión para sincronizar';document.getElementById('cloudIdentity').textContent='';await firebase.auth().signOut();cloudShowLogin()}
+async function cloudLogout(){clearTimeout(cloudTimer);if(cloudDirty&&cloudReady)await cloudWrite();if(cloudSnapshot){cloudSnapshot();cloudSnapshot=null}cloudReady=false;cloudUser=null;state=defaultGarage();document.getElementById('headerSync').textContent='Iniciá sesión para sincronizar';document.getElementById('cloudIdentity').textContent='';await firebase.auth().signOut();cloudShowLogin()}
 window.addEventListener('load',()=>{try{firebase.initializeApp(firebaseConfig);cloudDb=firebase.firestore();firebase.auth().onAuthStateChanged(user=>user?cloudLoad(user):cloudShowLogin())}catch(e){cloudShowLogin('No se pudo iniciar Firebase. Comprobá tu conexión.');cloudMessage.textContent=cloudError(e)}});
 
 </script></body></html>

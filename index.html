@@ -86,7 +86,50 @@ h2{font-size:32px}h3{font-size:26px}
 .reportBar>div{background:#e9ebed;border-radius:12px;height:12px;overflow:hidden}.reportBar i{display:block;height:100%;background:#cc202b;border-radius:12px}
 @media(max-width:600px){.reportBar{grid-template-columns:1fr auto}.reportBar>div{grid-column:1/-1;grid-row:2}.scroll table{min-width:650px}}
 @media print{header,nav,#cloudAccount,.quicklinks,button,.cloudBox{display:none!important}main{max-width:100%;padding:0}.hero{display:none}.card{box-shadow:none}}
-</style><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="app-icon.svg" type="image/svg+xml"><meta name="theme-color" content="#c71c26"><style id="mobile-app-ui">#mobileDock{display:none}@media(max-width:640px){body{padding-bottom:75px}#mobileDock{position:fixed;bottom:0;left:0;right:0;z-index:50;background:#fff;display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid #ddd;box-shadow:0 -8px 30px #0001;padding-bottom:env(safe-area-inset-bottom)}#mobileDock button{color:#38424a;background:white;display:flex;align-items:center;flex-direction:column;justify-content:center;font-size:25px;gap:2px;border-radius:0;min-height:65px;padding:6px 2px}#mobileDock button small{font-size:10px;font-weight:700}#mobileDock button.add{color:#c71c26}#mobileDock button:hover{background:#f5f5f5;transform:none}footer{padding-bottom:18px}}@media print{#mobileDock{display:none!important}}</style><style>.garageVehiclePhoto{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;border-radius:10px;margin-bottom:15px;background:#e8e9ea}</style><style id="record-filter-improvements">.recordFilters{display:grid;grid-template-columns:minmax(180px,2fr) minmax(150px,1fr) auto;align-items:end;gap:12px;margin:18px 0}.recordFilters label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:#666}.recordFilters input{min-height:44px}.recordFilters button{min-height:44px}.recordsCard tbody tr[hidden]{display:none!important}.recordsCard td:last-child .row{flex-wrap:nowrap}.recordsCard td button{padding:8px 11px;font-size:12px}@media(max-width:650px){.recordFilters{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.recordFilters label:first-child{grid-column:1/-1}.recordFilters button{grid-column:1/-1}.recordsCard{padding:16px 12px}.recordsCard .scroll{margin:0 -3px}}</style></head><body><header><div class="brandmark"><div class="brandicon">R</div><div><h1>RODME GARAGE</h1><small>MI GARAJE · CONTROL VEHICULAR</small></div></div><div class="vehiclebar"><label for="vehicleSelect">Vehículo:</label><select id="vehicleSelect" class="selector" onchange="selectVehicle(this.value)"></select><span class="pill" id="headerSync">Comprobando conexión…</span></div></header><nav id="nav"></nav><main id="root"></main><div id="mobileDock" aria-label="Navegación rápida"><button onclick="go('Inicio')">⌂<small>Inicio</small></button><button onclick="go('Vehículos')">🚙<small>Garaje</small></button><button class="add" onclick="go('Gasolina')">＋<small>Gasolina</small></button><button onclick="go('Gastos')">▤<small>Gastos</small></button><button onclick="go('Configuración')">⚙<small>Ajustes</small></button></div><footer>Rodme Garage · Versión 16.10.2026 · Incluye Talleres, Reportes y Mantenimiento preventivo · Tus registros se sincronizan con Firebase.</footer>
+</style><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="app-icon.svg" type="image/svg+xml"><meta name="theme-color" content="#c71c26"><style id="mobile-app-ui">#mobileDock{display:none}@media(max-width:640px){body{padding-bottom:75px}#mobileDock{position:fixed;bottom:0;left:0;right:0;z-index:50;background:#fff;display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid #ddd;box-shadow:0 -8px 30px #0001;padding-bottom:env(safe-area-inset-bottom)}#mobileDock button{color:#38424a;background:white;display:flex;align-items:center;flex-direction:column;justify-content:center;font-size:25px;gap:2px;border-radius:0;min-height:65px;padding:6px 2px}#mobileDock button small{font-size:10px;font-weight:700}#mobileDock button.add{color:#c71c26}#mobileDock button:hover{background:#f5f5f5;transform:none}footer{padding-bottom:18px}}@media print{#mobileDock{display:none!important}}</style><style>.garageVehiclePhoto{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;border-radius:10px;margin-bottom:15px;background:#e8e9ea}</style><style id="record-filter-improvements">.recordFilters{display:grid;grid-template-columns:minmax(180px,2fr) minmax(150px,1fr) auto;align-items:end;gap:12px;margin:18px 0}.recordFilters label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:#666}.recordFilters input{min-height:44px}.recordFilters button{min-height:44px}.recordsCard tbody tr[hidden]{display:none!important}.recordsCard td:last-child .row{flex-wrap:nowrap}.recordsCard td button{padding:8px 11px;font-size:12px}@media(max-width:650px){.recordFilters{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.recordFilters label:first-child{grid-column:1/-1}.recordFilters button{grid-column:1/-1}.recordsCard{padding:16px 12px}.recordsCard .scroll{margin:0 -3px}}</style><style id="rg-final-design-2026">
+:root{--rg-red:#bd1e2d;--rg-text:#20272d;--rg-muted:#65717a;--rg-border:#e6e9ec;--rg-bg:#f7f8fa}
+body{background:var(--rg-bg)!important;color:var(--rg-text);-webkit-font-smoothing:antialiased}
+header{padding-top:14px!important;padding-bottom:14px!important;background:#fff!important;border-bottom:1px solid var(--rg-border)!important;box-shadow:none!important}
+header h1{font-family:'Oswald',sans-serif;font-size:clamp(23px,2.4vw,30px)!important;letter-spacing:.65px!important}
+header small{letter-spacing:1px!important;color:#66717a!important}
+.brandicon{background:#b91f2e!important;clip-path:none!important;border-radius:12px!important;font-size:30px!important;box-shadow:0 5px 14px #bf223332}
+.vehiclebar select{border-radius:9px!important;background:#f7f8fa!important;border:1px solid #dce0e4!important;min-height:45px}
+main{padding-top:20px!important}
+.hero{margin-top:-20px!important}
+.hero:before{filter:none!important}
+.hero h2{font-weight:600!important;max-width:610px}
+.hero button{border-radius:9px!important;box-shadow:0 5px 18px #1113}
+.card{background:#fff!important;border:1px solid #e4e8eb!important;border-radius:14px!important;box-shadow:0 3px 14px #20283208!important}
+.card h3{color:#20272d!important}
+.metric{letter-spacing:-.4px}
+input,select,textarea{border-radius:9px!important}
+button{border-radius:9px;transition:background .16s ease,box-shadow .16s ease,transform .16s ease}
+button:hover{box-shadow:0 4px 12px #00000016}
+.quick{border:1px solid #e4e7ea!important;background:#fff!important;color:#293239!important;border-radius:13px!important}
+.quick:hover{background:#fff6f7!important}
+.section-header h3{font-weight:600}
+.notice{border-radius:11px!important}
+.record{gap:14px}
+.record>div:first-child{min-width:0;overflow-wrap:anywhere}
+#cloudAccount{background:#20282e!important;color:#fff!important}
+footer{background:#20282e!important;color:#c6cbd0!important}
+@media(max-width:640px){
+ header{gap:10px!important;padding:11px 13px!important}
+ .brandicon{width:40px!important;height:40px!important;font-size:25px!important}
+ .vehiclebar{width:100%!important;justify-content:space-between}
+ .vehiclebar select{flex:1;max-width:none!important}
+ main{padding:13px 13px 95px!important}
+ .hero{margin-top:-13px!important;border-radius:0!important}
+ .hero h2{max-width:100%;text-wrap:balance}
+ .hero+.grid{padding:15px 9px!important}
+ .card{padding:17px!important}
+ .grid>.card{min-width:0}
+ .quicklinks{gap:10px}
+ .quick{padding:13px!important;min-height:94px}
+ #cloudAccount{gap:6px;padding:9px 12px!important}
+ #mobileDock{box-shadow:0 -7px 30px #1b24301c!important}
+}
+</style></head><body><header><div class="brandmark"><div class="brandicon">R</div><div><h1>RODME GARAGE</h1><small>MI GARAJE · CONTROL VEHICULAR</small></div></div><div class="vehiclebar"><label for="vehicleSelect">Vehículo:</label><select id="vehicleSelect" class="selector" onchange="selectVehicle(this.value)"></select><span class="pill" id="headerSync">Comprobando conexión…</span></div></header><nav id="nav"></nav><main id="root"></main><div id="mobileDock" aria-label="Navegación rápida"><button onclick="go('Inicio')">⌂<small>Inicio</small></button><button onclick="go('Vehículos')">🚙<small>Garaje</small></button><button class="add" onclick="go('Gasolina')">＋<small>Gasolina</small></button><button onclick="go('Gastos')">▤<small>Gastos</small></button><button onclick="go('Configuración')">⚙<small>Ajustes</small></button></div><footer>Rodme Garage · Versión 16.10.2026 · Incluye Talleres, Reportes y Mantenimiento preventivo · Tus registros se sincronizan con Firebase.</footer>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script><script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
@@ -243,4 +286,4 @@ async function cloudLogout(){clearTimeout(cloudTimer);if(cloudDirty&&cloudReady)
 document.getElementById('root').innerHTML='<div style="padding:40px 20px;text-align:center;color:#879298">Preparando tu garaje…</div>';
 window.addEventListener('load',()=>{if('serviceWorker' in navigator)navigator.serviceWorker.register('./service-worker.js?v=2',{updateViaCache:'none'}).catch(e=>console.warn('PWA',e));try{firebase.initializeApp(firebaseConfig);cloudDb=firebase.firestore();firebase.auth().onAuthStateChanged(user=>user?cloudLoad(user):cloudShowLogin())}catch(e){cloudShowLogin('No se pudo iniciar Firebase. Comprobá tu conexión.');cloudMessage.textContent=cloudError(e)}});
 
-</script><script src="./enhancements.js?v=20261015e"></script></body></html>
+</script><script src="./enhancements.js?v=20261015f"></script></body></html>

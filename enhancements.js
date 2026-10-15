@@ -1,8 +1,8 @@
 /* Rodme Garage: módulos complementarios. Mantiene el formato actual de Firestore. */
 (()=>{
-const extraPages=['Archivos','Expediente','Kilometraje','Repuestos','Inspección 4x4','Calendario','Viajes','Papelera'];
+const extraPages=['Centro de alertas','Archivos','Expediente','Kilometraje','Repuestos','Inspección 4x4','Calendario','Viajes','Papelera'];
 for(const p of extraPages)if(!pages.includes(p))pages.splice(pages.indexOf('Reportes'),0,p);
-const oldRender=render,oldSave=save,oldRemove=removeEntry,oldDelete=deleteVehicle;
+const oldRender=render,oldSave=save,oldRemove=removeEntry,oldDelete=deleteVehicle,oldFinishService=finishServicePlan;
 const id=()=>Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
 const sum=a=>a.reduce((n,x)=>n+Number(x.amount||0),0);
 const safeDate=d=>/^\d{4}-\d{2}-\d{2}$/.test(d||'');
@@ -34,6 +34,13 @@ if(tab==='Inspección 4x4'){
  const checks=items.map((t,i)=>'<label class="rg-check"><input type="checkbox" name="c'+i+'"> '+esc(t)+'</label>').join('');
  html='<h2>Inspección 4x4</h2>'+card('Nueva lista de verificación','<p class="muted">Marcá lo que revisaste antes de salir. Los puntos sin marcar quedarán registrados como pendientes.</p><form onsubmit="rgInspection(event)">'+checks+'<div class="field"><label>Observaciones</label><textarea name="notes" rows="2"></textarea></div><button>Guardar inspección de hoy</button></form>')+card('Inspecciones anteriores',car.inspections.length?car.inspections.slice().reverse().map((x,i)=>row(x.date,x.checked+'/'+items.length+' revisiones · '+(x.notes||'Sin observaciones'))).join(''):empty('Todavía no hay inspecciones.'));
 }
+if(tab==='Centro de alertas'){
+const todayStr=today(),limit=new Date(Date.now()+30*86400000).toISOString().slice(0,10);
+const due=[...(car.docs||[]).map(x=>({...x,category:'Documento'})),...(car.servicePlans||[]).filter(x=>!x.done).map(x=>({...x,category:'Mantenimiento'})),...(car.repairFiles||[]).map(x=>({...x,category:'Garantía'}))].filter(x=>safeDate(x.date)&&x.date<=limit).sort((a,b)=>a.date.localeCompare(b.date));
+const overdue=due.filter(x=>x.date<todayStr);
+const budget=Number(car.monthlyBudget||0),spent=car.entries.filter(x=>String(x.date||'').startsWith(todayStr.slice(0,7))).reduce((a,x)=>a+Number(x.amount||0),0);
+html='<h2>Centro de alertas</h2><p class="muted">Vencimientos, mantenimientos y presupuesto reunidos en un solo lugar.</p>'+card('Estado general', '<div class="metric">'+(overdue.length?'Requiere atención':due.length?'Próximas tareas':'Al día')+'</div><p>'+overdue.length+' vencimientos atrasados · '+due.length+' próximos o vencidos</p>')+card('Fechas importantes',due.length?due.map(x=>row(x.name,x.category+' · '+x.date+(x.date<todayStr?' · VENCIDO':''))).join(''):empty('No hay vencimientos durante los próximos 30 días.'))+card('Presupuesto del mes',budget?'Gastado '+money(spent)+' de '+money(budget)+(spent>budget?' · PRESUPUESTO SUPERADO':''):empty('Podés configurar un presupuesto en Configuración.'));
+}
 if(tab==='Calendario'){
  const events=[...(car.docs||[]).filter(x=>safeDate(x.date)).map(x=>({...x,type:'Documento'})),...(car.servicePlans||[]).filter(x=>safeDate(x.date)&&!x.done).map(x=>({...x,type:'Mantenimiento'})),...(car.repairFiles||[]).filter(x=>safeDate(x.date)).map(x=>({...x,type:'Garantía'}))].sort((a,b)=>a.date.localeCompare(b.date));
  html='<h2>Calendario vehicular</h2><p class="muted">Reúne fechas de documentos, servicios y garantías ya registradas. No tenés que ingresarlas de nuevo.</p>'+card('Fechas importantes',events.length?events.map(x=>row(x.date,x.type+' · '+x.name+(x.date<today()?' · VENCIDO':''))).join(''):empty('Agregá fechas en Documentos, Mantenimiento o Expediente.'))+'<button onclick="rgNotifications()">Activar avisos del navegador</button><p class="tiny">Los avisos del navegador requieren permiso y que la aplicación esté abierta. No son notificaciones push en segundo plano.</p>';
@@ -60,7 +67,8 @@ if(html){const root=document.getElementById('root');if(extraPages.includes(tab))
 if(tab==='Respaldos'){const el=document.getElementById('rgBackupStatus');if(el)el.textContent='Copias locales disponibles: '+backupList().length;}
 if(tab==='Inicio'){noticeDates();try{rgDueNotifications()}catch(e){console.warn('Avisos:',e)}}
 }
-render=function(){oldRender();fillExtra();};
+finishServicePlan=function(i){const p=v().servicePlans?.[i];if(p&&!p.done&&(Number(p.repeatMonths)>0||Number(p.repeatKm)>0)){const date=p.date||today();let nextDate='';if(p.repeatMonths>0){const d=new Date(date+'T12:00:00');d.setMonth(d.getMonth()+Number(p.repeatMonths));nextDate=d.toISOString().slice(0,10)}const nextKm=Number(p.repeatKm)>0?Number(p.km||lastKm())+Number(p.repeatKm):'';v().servicePlans.push({...p,id:id(),date:nextDate,km:nextKm,done:false,finishedAt:''})}oldFinishService(i)};
+render=function(){oldRender();fillExtra();if(tab==='Mantenimiento'){document.querySelectorAll('.record').forEach((row,i)=>{if(!row.querySelector('button[onclick^="finishServicePlan"]'))return;const index=Number(row.querySelector('button[onclick^="finishServicePlan"]').getAttribute('onclick').match(/\d+/)?.[0]);if(!Number.isFinite(index))return;const b=document.createElement('button');b.type='button';b.className='secondary';b.textContent='Repetición';b.onclick=()=>rgNextService(index);row.querySelector('.row')?.appendChild(b)})}};
 function backupList(){try{return JSON.parse(localStorage.getItem('rodme-backups-v1')||'[]')}catch{return []}}
 function snapshotLocal(){try{const list=backupList(),day=today();if(!list.some(x=>x.day===day)){list.unshift({day,data:JSON.stringify(state)});localStorage.setItem('rodme-backups-v1',JSON.stringify(list.slice(0,5)))}}catch(e){console.warn('No se pudo crear el respaldo local',e)}}
 save=function(){ensure();snapshotLocal();oldSave()};
@@ -68,6 +76,7 @@ removeEntry=function(entryId){const item=v().entries.find(e=>Number(e.id)===Numb
 window.rgRestore=i=>{ensure();const x=state.trash[i];if(!x||x.type!=='entry')return;const car=state.vehicles.find(y=>y.id===x.vehicleId);if(!car)return alert('Ese vehículo ya no existe.');if(!car.entries.some(y=>Number(y.id)===Number(x.item.id)))car.entries.unshift(x.item);state.trash.splice(i,1);put()};
 window.rgRemove=(collection,i)=>{ensure();const list=collection==='trash'?state.trash:v()[collection];if(!Array.isArray(list)||!list[i])return;if(!confirm('¿Eliminar este elemento?'))return;list.splice(i,1);put()};
 window.rgAdd=(ev,collection)=>{const x=fields(ev);if(x.url&&!/^https:\/\//i.test(x.url))return alert('Solo enlaces HTTPS.');ensure();v()[collection].push({...x,id:id()});put()};
+window.rgNextService=(i)=>{const p=v().servicePlans?.[i];if(!p)return;const months=Number(prompt('¿Cada cuántos meses se repite? (0 = solo kilometraje)',String(p.repeatMonths||0)));if(!Number.isInteger(months)||months<0||months>120)return alert('Meses inválidos');const km=Number(prompt('¿Cada cuántos kilómetros se repite? (0 = solo fecha)',String(p.repeatKm||0)));if(!Number.isInteger(km)||km<0)return alert('Kilómetros inválidos');p.repeatMonths=months;p.repeatKm=km;save();render()};
 window.rgAddMileage=ev=>{const x=fields(ev),km=Number(x.km);if(!safeDate(x.date)||!Number.isFinite(km)||km<0)return alert('Datos inválidos');if(km<lastKm()&&!confirm('Es un kilometraje menor que uno registrado. ¿Guardar de todos modos?'))return;ensure();v().mileageReadings.push({...x,km,id:id(),name:'Lectura manual'});v().odometer=String(Math.max(km,Number(v().odometer)||0));put()};
 window.rgAddTrip=ev=>{const x=fields(ev);if(!Number.isFinite(+x.km)||Number(x.km)<0||!Number.isFinite(+x.amount)||Number(x.amount)<0)return alert('Valores inválidos');ensure();v().trips.push({...x,id:id(),km:+x.km,amount:+x.amount});put()};
 window.rgInspection=ev=>{const x=fields(ev);ensure();v().inspections.push({id:id(),date:today(),checked:Array.from({length:8},(_,i)=>x['c'+i]).filter(Boolean).length,notes:x.notes||''});put()};

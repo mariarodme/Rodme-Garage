@@ -1145,6 +1145,43 @@ nav#nav button.active,nav#nav .rg-menu-button.active,nav#nav .rg-subactive,nav#n
  #root .quick{border-radius:3px!important}
  header .brandicon{width:42px;height:42px}
 }
+</style><style id="rg-audit-cleanup-2026">
+/* Auditoría visual: una sola jerarquía de navegación y contenido legible. */
+:root{--rg-audit-red:#b91e29;--rg-audit-dark:#292929;--rg-audit-light:#f6f6f6}
+@media(min-width:1024px){
+/* El menú lateral ya da acceso a Inicio y las secciones: retirar barra secundaria redundante. */
+#rgEasyBar{display:none!important}
+nav#nav{box-shadow:1px 0 0 #ebebeb!important}
+nav#nav button{min-height:44px!important;text-align:left!important}
+main#root{padding-top:20px!important}
+}
+@media(min-width:761px) and (max-width:1023px){
+#rgEasyBar{padding:8px 20px!important}
+#rgEasyBar .rg-location{min-width:100px}
+#rgEasyHome{display:none!important}
+}
+@media(max-width:760px){
+/* En celular, la barra inferior ya incluye Inicio: evitar doble acción. */
+#rgEasyHome{display:none!important}
+#rgEasyBar{display:flex!important;gap:10px!important;padding:9px 14px!important;align-items:center!important}
+#rgEasyBar .rg-location{flex-basis:100%;font-size:15px!important;margin:0!important}
+#rgEasyBar .rg-location small{display:inline!important;margin:0 7px 0 0!important;font-size:12px!important}
+#rgEasyBar #rgEasyBack,#rgEasyBar #rgEasyTools{flex:1!important}
+#rgEasyBar #rgEasyBack:disabled{opacity:.45}
+nav#nav{display:none!important}
+/* Secciones accesibles desde el botón Secciones y la barra inferior. */
+#rgSimpleHome .rg-simple-actions button{min-height:108px!important}
+#rgSimpleHome .rg-simple-summary{padding:16px!important}
+#root .rg-section-title .rg-section-desc{display:none!important}
+#root .rg-vehicle-profile{max-width:100%}
+#root .rg-activity-timeline .rg-activity-event{gap:9px}
+#root table{font-size:14px}
+}
+#rgToolsBackdrop:not([hidden]){z-index:10000!important}
+#rgToolsBackdrop[hidden]{display:none!important}
+#rgToolsModal .tools-header{position:sticky;top:0;background:#fff;z-index:1}
+#rgToolsModal button:focus-visible,#rgToolsList button:focus-visible{outline:3px solid #c72c38!important;outline-offset:2px}
+#rgEasyBar button:focus-visible{outline:3px solid #c72c38!important;outline-offset:2px}
 </style></head><body><header><div class="brandmark"><div class="brandicon">R</div><div><h1>RODME GARAGE</h1></div></div><div class="vehiclebar"><label for="vehicleSelect">Vehículo:</label><select id="vehicleSelect" class="selector" onchange="selectVehicle(this.value)"></select><span class="pill" id="headerSync" aria-live="polite" style="display:none!important" hidden>Comprobando conexión…</span></div></header><nav id="nav"></nav><div id="rgEasyBar" role="navigation" aria-label="Orientación y acceso rápido"><div class="rg-location"><small>Estás en</small><span id="rgEasyCurrent">Inicio</span></div><button id="rgEasyBack" type="button" disabled aria-label="Volver a la sección anterior"><span class="rg-easy-icon" aria-hidden="true">←</span>Volver</button><button id="rgEasyHome" type="button"><span class="rg-easy-icon" aria-hidden="true">⌂</span>Inicio</button><button id="rgEasyTools" class="rg-easy-main" type="button"><span class="rg-easy-icon" aria-hidden="true">☰</span>Secciones</button></div><main id="root"></main><div id="rgToolsBackdrop" hidden><div id="rgToolsModal" role="dialog" aria-modal="true" aria-label="Todas las herramientas"><div class="tools-header"><h2>Todas las herramientas</h2><button type="button" onclick="rgCloseAllTools()" aria-label="Cerrar">×</button></div><div id="rgToolsList"></div></div></div><div id="mobileDock" aria-label="Navegación rápida"><button onclick="go('Inicio')"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><small>Inicio</small></button><button onclick="go('Vehículos')"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 11 2-5h10l2 5"/><rect x="3" y="11" width="18" height="8" rx="2"/><circle cx="7.5" cy="16" r="1"/><circle cx="16.5" cy="16" r="1"/></svg><small>Garaje</small></button><button class="add" onclick="rgQuickAction()"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><small>Agregar</small></button><button onclick="go('Gastos')"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v4h4"/><path d="M12 7v5l3 2"/></svg><small>Historial</small></button><button onclick="rgOpenAllTools()"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><small>Más</small></button></div><footer>Rodme Garage · Versión 16.10.2026 · Incluye Talleres, Reportes y Mantenimiento preventivo · Tus registros se sincronizan con Firebase.</footer>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>

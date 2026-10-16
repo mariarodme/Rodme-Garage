@@ -1205,6 +1205,61 @@ nav#nav{display:none!important}
 #rgToolsModal button:focus-visible,#rgToolsList button:focus-visible{outline:3px solid #c72c38!important;outline-offset:2px}
 #rgEasyBar button:focus-visible{outline:3px solid #c72c38!important;outline-offset:2px}
 
+
+/* Rodme Garage — acabado profesional y sistema visual coherente 2026 */
+:root{--pro-ink:#222629;--pro-muted:#656b70;--pro-accent:#b51e2a;--pro-border:#e5e7e9;--pro-canvas:#f5f6f7;--pro-shadow:0 3px 14px rgba(24,28,31,.045)}
+body{font-family:'DM Sans',Arial,sans-serif!important;background:var(--pro-canvas)!important;color:var(--pro-ink)!important;line-height:1.55}
+header,nav#nav,#rgEasyBar{font-family:'DM Sans',Arial,sans-serif!important}
+header{min-height:72px!important}
+header h1{font-family:'DM Sans',Arial,sans-serif!important;font-size:24px!important;font-weight:800!important;letter-spacing:-.65px!important}
+#root h2,#root h3{font-family:'DM Sans',Arial,sans-serif!important;letter-spacing:-.7px!important;font-weight:780!important}
+#root h2{font-size:clamp(28px,3vw,39px)!important}
+#root h3{font-size:clamp(20px,2vw,26px)!important}
+#root .card,#root .rg-vehicle-profile,#root .rg-home-chart,#root .rg-home-status{border:1px solid var(--pro-border)!important;box-shadow:var(--pro-shadow)!important;border-radius:10px!important}
+#root .card{margin-bottom:16px!important}
+#root .grid{gap:16px!important}
+#root .statslabel,#root .rg-eyebrow{font-weight:750!important;letter-spacing:.3px!important;color:#616970!important}
+#root .metric{font-variant-numeric:tabular-nums;font-weight:800!important;letter-spacing:-1px!important}
+#root .section-header{margin-block:28px 15px!important;gap:13px}
+#root .section-header:before{width:3px!important;height:25px!important;background:var(--pro-accent)!important}
+#root button,#rgEasyBar button,#rgToolsModal button{font-family:'DM Sans',Arial,sans-serif!important;font-weight:700!important;letter-spacing:0!important}
+#root button:not(.linklike){border-radius:8px!important}
+#root button.secondary{background:#32373b!important}
+#root .quick{background:#fff!important;border:1px solid #e2e4e6!important;border-bottom:2px solid #bb2531!important;border-radius:10px!important;min-height:104px!important;box-shadow:none!important}
+#root .quick:hover{background:#fff7f7!important;border-color:#d9a9af!important;box-shadow:0 7px 18px #1515150a!important}
+#root input,#root select,#root textarea{border-radius:8px!important;border:1px solid #cbd0d4!important;min-height:46px!important;background:white!important}
+#root input:focus-visible,#root select:focus-visible,#root textarea:focus-visible{outline:2px solid #bf2935!important;outline-offset:1px!important}
+#root .field{margin-block:13px!important}
+#root .field label{color:#42494e!important;font-size:14px!important;font-weight:700!important}
+#root table{border-collapse:separate;border-spacing:0;width:100%}
+#root th{background:#f0f2f3!important;color:#3d4449!important;font-size:12px!important;letter-spacing:.35px!important}
+#root td{font-size:14px!important;color:#33383c!important}
+#root tr:hover td{background:#fafbfb!important}
+#root .record{border-color:#ebedf0!important}
+#root .notice,#root .alert{border-radius:9px!important}
+#root .hero{border-radius:10px!important}
+#root .hero h2{font-weight:850!important}
+#rgEasyBar{border-bottom:1px solid #e5e7e8!important}
+#rgEasyBar button{border-radius:8px!important}
+#rgToolsModal{border-radius:12px!important}
+#rgToolsModal .tools-grid button{border-radius:8px!important}
+#root button:focus-visible,#rgEasyBar button:focus-visible,#mobileDock button:focus-visible,nav#nav button:focus-visible{outline:3px solid #d8525b!important;outline-offset:2px!important}
+@media(max-width:760px){
+ header h1{font-size:21px!important}
+ main#root{padding:10px 14px 102px!important}
+ #root .card{padding:17px!important;border-radius:10px!important}
+ #root .grid{gap:11px!important}
+ #root .hero{border-radius:10px!important}
+ #rgSimpleHome h2{font-family:'DM Sans',Arial,sans-serif!important;text-transform:none!important;font-size:29px!important;letter-spacing:-.85px!important}
+ #rgSimpleHome .rg-simple-actions{gap:10px!important}
+ #rgSimpleHome .rg-simple-actions button{border-radius:12px!important;padding:16px!important;min-height:112px!important;font-size:16px!important;line-height:1.25!important}
+ #rgSimpleHome .rg-simple-actions button:first-child{background:#b51e2a!important;border-color:#b51e2a!important}
+ #rgSimpleHome .rg-simple-summary{border-radius:12px!important}
+ #rgSimpleHome .rg-simple-expand{border-radius:10px!important}
+ #root .quick{min-height:100px!important}
+ #mobileDock{box-shadow:0 -4px 18px #0000000d!important}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head><body><header><div class="brandmark"><div class="brandicon">R</div><div><h1>RODME GARAGE</h1></div></div><div class="vehiclebar"><label for="vehicleSelect">Vehículo:</label><select id="vehicleSelect" class="selector" onchange="selectVehicle(this.value)"></select><span class="pill" id="headerSync" aria-live="polite" style="display:none!important" hidden>Comprobando conexión…</span></div></header><nav id="nav"></nav><div id="rgEasyBar" role="navigation" aria-label="Orientación y acceso rápido"><div class="rg-location"><small>Estás en</small><span id="rgEasyCurrent">Inicio</span></div><button id="rgEasyBack" type="button" disabled aria-label="Volver a la sección anterior"><span class="rg-easy-icon" aria-hidden="true">←</span>Volver</button><button id="rgEasyHome" type="button"><span class="rg-easy-icon" aria-hidden="true">⌂</span>Inicio</button><button id="rgEasyTools" class="rg-easy-main" type="button"><span class="rg-easy-icon" aria-hidden="true">☰</span>Secciones</button></div><main id="root"></main><div id="rgToolsBackdrop" hidden><div id="rgToolsModal" role="dialog" aria-modal="true" aria-label="Todas las herramientas"><div class="tools-header"><h2>Todas las herramientas</h2><button type="button" onclick="rgCloseAllTools()" aria-label="Cerrar">×</button></div><div id="rgToolsList"></div></div></div><div id="mobileDock" aria-label="Navegación rápida"><button onclick="go('Inicio')"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><small>Inicio</small></button><button onclick="go('Vehículos')"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 11 2-5h10l2 5"/><rect x="3" y="11" width="18" height="8" rx="2"/><circle cx="7.5" cy="16" r="1"/><circle cx="16.5" cy="16" r="1"/></svg><small>Garaje</small></button><button class="add" onclick="rgQuickAction()"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><small>Agregar</small></button><button onclick="go('Gastos')"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v4h4"/><path d="M12 7v5l3 2"/></svg><small>Historial</small></button><button onclick="rgOpenAllTools()"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><small>Más</small></button></div><footer>Rodme Garage · Versión 16.10.2026 · Incluye Talleres, Reportes y Mantenimiento preventivo · Tus registros se sincronizan con Firebase.</footer>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>

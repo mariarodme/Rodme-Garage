@@ -1388,8 +1388,11 @@ body>main#root{width:100%!important;margin:0!important;padding:18px 16px calc(11
 #rgSimpleHome .rg-simple-summary-line:last-child{border:0!important}
 #rgSimpleHome .rg-simple-expand{min-height:45px!important;border:1px solid #e2e6e9!important;border-radius:12px!important;background:#fff!important;color:#4f5d67!important;font-size:13px!important}
 #mobileDock{z-index:900!important;background:#fff!important;box-shadow:0 -5px 20px #1e2c3612!important;border-top:1px solid #eaedef!important;padding-bottom:env(safe-area-inset-bottom)!important}
-#mobileDock button{min-width:0!important}#mobileDock button.add{background:#b91e29!important;border-radius:13px!important;color:#fff!important}
-#mobileDock button.add small{color:#fff!important;opacity:1!important}
+#mobileDock button{min-width:0!important}#mobileDock button.add{background:transparent!important;color:#b91e29!important;border-radius:0!important;box-shadow:none!important;transform:none!important;padding:5px 2px!important;gap:3px!important}
+#mobileDock button.add svg{width:31px!important;height:31px!important;padding:7px!important;box-sizing:content-box!important;background:#b91e29!important;border-radius:14px!important;color:#fff!important;stroke:#fff!important;box-shadow:0 4px 11px #b91e292a!important}
+#mobileDock button.add:hover{background:transparent!important}
+#mobileDock button.add:active svg{background:#991725!important;transform:scale(.96)!important}
+#mobileDock button.add small{color:#b91e29!important;opacity:1!important;font-weight:750!important;font-size:10px!important}
 #rgToolsBackdrop:not([hidden]){display:flex!important;position:fixed!important;inset:0!important;z-index:20000!important;align-items:flex-end!important;justify-content:center!important;background:#101820a8!important}
 #rgToolsModal{width:100%!important;max-width:none!important;height:min(77dvh,690px)!important;max-height:77dvh!important;overflow:auto!important;overscroll-behavior:contain!important;background:#fff!important;border-radius:20px 20px 0 0!important;padding:0 16px calc(18px + env(safe-area-inset-bottom))!important}
 #rgToolsModal .tools-header{position:sticky!important;top:0!important;z-index:2!important;background:#fff!important;display:flex!important;align-items:center!important;padding:15px 0 12px!important}

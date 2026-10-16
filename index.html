@@ -959,6 +959,31 @@ main#root{color:#26362e!important}
 }
 @media(max-width:380px){#rgEasyBar .rg-easy-icon{display:none}#rgEasyBar button{font-size:13px!important}}
 @media(prefers-reduced-motion:reduce){#rgEasyBar button{transition:none!important}}
+</style><style id="rg-mobile-simple-home-2026">
+#rgSimpleHome{display:none}
+@media(max-width:760px){
+ body.rg-simple-home #root{padding-top:4px!important}
+ body.rg-simple-home:not(.rg-home-expanded) #root > :not(#rgSimpleHome){display:none!important}
+ body.rg-simple-home #rgSimpleHome{display:block!important}
+ #rgSimpleHome{margin:0 0 16px;color:#26362e}
+ #rgSimpleHome .rg-simple-welcome{font-size:13px;font-weight:700;color:#69775b;margin:10px 0 4px}
+ #rgSimpleHome h2{font-size:clamp(27px,7vw,34px)!important;line-height:1.12!important;margin:0 0 7px!important;color:#24302b!important}
+ #rgSimpleHome .rg-simple-intro{font-size:15px;line-height:1.5;color:#68766b;margin:0 0 18px}
+ #rgSimpleHome .rg-simple-actions{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:18px}
+ #rgSimpleHome .rg-simple-actions button{min-height:100px!important;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:12px;text-align:left;border:1px solid #dce2d5!important;background:#fff!important;color:#26362e!important;border-radius:16px!important;padding:15px!important;box-shadow:0 3px 14px #26362e0b!important;font-size:17px!important;font-weight:800!important;line-height:1.25!important}
+ #rgSimpleHome .rg-simple-actions button:first-child{background:#69775b!important;border-color:#69775b!important;color:white!important}
+ #rgSimpleHome .rg-simple-actions button .rg-simple-ico{font-size:24px;line-height:1}
+ #rgSimpleHome .rg-simple-actions button:active{transform:scale(.985)}
+ #rgSimpleHome .rg-simple-summary{background:#fff;border:1px solid #e3e3d9;border-radius:16px;padding:17px;margin-bottom:12px}
+ #rgSimpleHome .rg-simple-summary h3{font-size:21px!important;margin:0 0 12px!important;color:#24302b!important}
+ #rgSimpleHome .rg-simple-summary-line{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #eee;font-size:15px}
+ #rgSimpleHome .rg-simple-summary-line:last-child{border:0}
+ #rgSimpleHome .rg-simple-summary-line strong{text-align:right;overflow-wrap:anywhere}
+ #rgSimpleHome .rg-simple-expand{background:transparent!important;color:#495b45!important;border:1px solid #b7c4ae!important;width:100%;min-height:52px;border-radius:13px!important;font-size:16px!important;font-weight:800!important}
+ body.rg-home-expanded #root > :not(#rgSimpleHome){display:revert}
+ body.rg-home-expanded #rgSimpleHome .rg-simple-intro{margin-bottom:14px}
+ body.rg-home-expanded #rgSimpleHome .rg-simple-summary{display:none}
+}
 </style></head><body><header><div class="brandmark"><div class="brandicon">R</div><div><h1>RODME GARAGE</h1></div></div><div class="vehiclebar"><label for="vehicleSelect">Vehículo:</label><select id="vehicleSelect" class="selector" onchange="selectVehicle(this.value)"></select><span class="pill" id="headerSync" aria-live="polite" style="display:none!important" hidden>Comprobando conexión…</span></div></header><nav id="nav"></nav><div id="rgEasyBar" role="navigation" aria-label="Orientación y acceso rápido"><div class="rg-location"><small>Estás en</small><span id="rgEasyCurrent">Inicio</span></div><button id="rgEasyBack" type="button" disabled aria-label="Volver a la sección anterior"><span class="rg-easy-icon" aria-hidden="true">←</span>Volver</button><button id="rgEasyHome" type="button"><span class="rg-easy-icon" aria-hidden="true">⌂</span>Inicio</button><button id="rgEasyTools" class="rg-easy-main" type="button"><span class="rg-easy-icon" aria-hidden="true">☰</span>Secciones</button></div><main id="root"></main><div id="rgToolsBackdrop" hidden><div id="rgToolsModal" role="dialog" aria-modal="true" aria-label="Todas las herramientas"><div class="tools-header"><h2>Todas las herramientas</h2><button type="button" onclick="rgCloseAllTools()" aria-label="Cerrar">×</button></div><div id="rgToolsList"></div></div></div><div id="mobileDock" aria-label="Navegación rápida"><button onclick="go('Inicio')"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><small>Inicio</small></button><button onclick="go('Vehículos')"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 11 2-5h10l2 5"/><rect x="3" y="11" width="18" height="8" rx="2"/><circle cx="7.5" cy="16" r="1"/><circle cx="16.5" cy="16" r="1"/></svg><small>Garaje</small></button><button class="add" onclick="rgQuickAction()"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><small>Agregar</small></button><button onclick="go('Gastos')"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v4h4"/><path d="M12 7v5l3 2"/></svg><small>Historial</small></button><button onclick="rgOpenAllTools()"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><small>Más</small></button></div><footer>Rodme Garage · Versión 16.10.2026 · Incluye Talleres, Reportes y Mantenimiento preventivo · Tus registros se sincronizan con Firebase.</footer>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -1214,6 +1239,54 @@ function rgConfirmImport(){if(!cloudReady||!cloudUser){alert('Iniciá sesión pa
   });
   refresh();
   var nav=document.getElementById('nav');if(nav)new MutationObserver(refresh).observe(nav,{childList:true});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script><script id="rg-mobile-simple-home-script-2026">
+(function(){
+ var expanded=false;
+ function label(){return (document.querySelector('#nav button.active')?.textContent||'').trim()}
+ function clean(t){return String(t||'').trim()}
+ function update(){
+  var root=document.getElementById('root');if(!root)return;
+  var home=label()==='Inicio';
+  document.body.classList.toggle('rg-simple-home',home);
+  if(!home){document.body.classList.remove('rg-home-expanded');expanded=false;return}
+  var panel=document.getElementById('rgSimpleHome');
+  if(!panel){
+   panel=document.createElement('section');panel.id='rgSimpleHome';panel.setAttribute('aria-label','Inicio simplificado');
+   panel.innerHTML='<p class="rg-simple-welcome">MI GARAJE</p><h2>¿Qué querés hacer hoy?</h2><p class="rg-simple-intro">Elegí una opción para empezar.</p>'+
+   '<div class="rg-simple-actions">'+
+   '<button type="button" data-destination="Gasolina"><span class="rg-simple-ico" aria-hidden="true">⛽</span>Agregar gasolina</button>'+
+   '<button type="button" data-destination="Gastos"><span class="rg-simple-ico" aria-hidden="true">＋</span>Registrar gasto</button>'+
+   '<button type="button" data-destination="Mantenimiento"><span class="rg-simple-ico" aria-hidden="true">🔧</span>Mantenimiento</button>'+
+   '<button type="button" data-destination="Pendientes"><span class="rg-simple-ico" aria-hidden="true">✓</span>Ver pendientes</button>'+
+   '</div><div class="rg-simple-summary"><h3>Resumen rápido</h3>'+
+   '<div class="rg-simple-summary-line"><span>Gastos del mes</span><strong id="rgSimpleExpenses">—</strong></div>'+
+   '<div class="rg-simple-summary-line"><span>Trabajos pendientes</span><strong id="rgSimplePending">—</strong></div></div>'+
+   '<button type="button" class="rg-simple-expand" id="rgSimpleExpand" aria-expanded="false">Ver toda la información ↓</button>';
+   panel.addEventListener('click',function(e){
+    var b=e.target.closest('[data-destination]');if(b&&typeof window.go==='function')window.go(b.dataset.destination);
+    if(e.target.closest('#rgSimpleExpand')){
+     expanded=!expanded;document.body.classList.toggle('rg-home-expanded',expanded);
+     var toggle=document.getElementById('rgSimpleExpand');toggle.textContent=expanded?'Ocultar detalles ↑':'Ver toda la información ↓';toggle.setAttribute('aria-expanded',String(expanded));
+    }
+   });
+   root.prepend(panel);
+  }
+  var cards=root.querySelectorAll(':scope > .grid > .card.rg-stat-link');
+  var expense=document.getElementById('rgSimpleExpenses'),pending=document.getElementById('rgSimplePending');
+  if(expense&&cards[0])expense.textContent=clean(cards[0].querySelector('.metric')?.textContent)||'—';
+  if(pending&&cards[2])pending.textContent=clean(cards[2].querySelector('.metric')?.textContent)||'0';
+  document.body.classList.toggle('rg-home-expanded',expanded);
+ }
+ var scheduled=false;
+ function schedule(){if(scheduled)return;scheduled=true;requestAnimationFrame(function(){scheduled=false;update()})}
+ function init(){
+  schedule();
+  var root=document.getElementById('root'),nav=document.getElementById('nav');
+  if(root)new MutationObserver(function(changes){if(changes.some(function(c){return Array.from(c.addedNodes).some(function(n){return n.id!=='rgSimpleHome'})}))schedule()}).observe(root,{childList:true});
+  if(nav)new MutationObserver(schedule).observe(nav,{childList:true});
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();

@@ -1401,6 +1401,36 @@ body>main#root{width:100%!important;margin:0!important;padding:18px 16px calc(11
 #rgToolsList [hidden]{display:none!important}
 }
 @media(max-width:360px){#rgSimpleHome .rg-simple-actions button{padding:13px!important;min-height:120px!important;font-size:14px!important}}
+
+/* Componentes comunes de pantallas secundarias (sin cambiar estructura ni datos) */
+@media(max-width:760px){
+body:not(.rg-simple-home) #root>h2{font-family:Inter,Arial,sans-serif!important;font-size:25px!important;line-height:1.2!important;letter-spacing:-.7px!important;margin:8px 0 13px!important}
+body:not(.rg-simple-home) #root>p.muted{font-size:14px!important;line-height:1.55!important;margin:0 0 16px!important}
+#root .card,#root .rg-extra .card{border:1px solid #e6eaed!important;border-radius:16px!important;padding:17px!important;background:#fff!important;box-shadow:0 3px 12px #28323b08!important;margin-bottom:14px!important;min-width:0!important}
+#root .card h3,#root .rg-extra .card h3{font-family:Inter,Arial,sans-serif!important;font-weight:750!important;font-size:19px!important;line-height:1.3!important;letter-spacing:-.45px!important;margin:0 0 14px!important}
+#root form .cols{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:4px!important}
+#root .field{min-width:0!important;margin:8px 0 13px!important;gap:7px!important}
+#root .field label{display:block!important;font-size:13px!important;font-weight:700!important;line-height:1.4!important;color:#46535c!important}
+#root input:not([type="checkbox"]),#root select,#root textarea{font-size:16px!important;width:100%!important;max-width:100%!important;min-width:0!important;min-height:46px!important;border-radius:11px!important;border:1px solid #dce2e6!important;background:#fff!important;color:#27343d!important}
+#root textarea{min-height:92px!important;resize:vertical}
+#root input:focus-visible,#root select:focus-visible,#root textarea:focus-visible{outline:2px solid #bc2939!important;outline-offset:1px!important}
+#root form button[type="submit"],#root form button:not([type]){min-height:47px!important;border-radius:11px!important;padding:11px 16px!important;font-size:14px!important}
+#root .row{gap:10px!important;min-width:0!important}
+#root .record{display:flex!important;align-items:flex-start!important;gap:10px!important;min-width:0!important;padding:13px 0!important;border-bottom:1px solid #edf0f2!important}
+#root .record>div:first-child{min-width:0!important;overflow-wrap:anywhere!important}
+#root .record .row{justify-content:flex-end!important}
+#root .scroll{max-width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;border-radius:11px!important}
+#root .scroll table{min-width:520px!important}
+#root .section-header{margin:24px 0 12px!important}
+#root .section-header h3{font-size:19px!important}
+#root button{touch-action:manipulation}
+}
+@media(min-width:761px){
+#root form .cols{gap:4px 18px!important}
+#root .card{min-width:0!important}
+#root .scroll{max-width:100%!important;overflow-x:auto!important}
+#root input:focus-visible,#root textarea:focus-visible,#root select:focus-visible{outline:2px solid #ba2b39!important;outline-offset:1px!important}
+}
 </style>
 </head><body><header><div class="brandmark"><div class="brandicon">R</div><div><h1>RODME GARAGE</h1></div></div><div class="vehiclebar"><label for="vehicleSelect">Vehículo:</label><select id="vehicleSelect" class="selector" onchange="selectVehicle(this.value)"></select><span class="pill" id="headerSync" aria-live="polite" style="display:none!important" hidden>Comprobando conexión…</span></div></header><nav id="nav"></nav><div id="rgEasyBar" role="navigation" aria-label="Orientación y acceso rápido"><div class="rg-location"><small>Estás en</small><span id="rgEasyCurrent">Inicio</span></div><button id="rgEasyBack" type="button" disabled aria-label="Volver a la sección anterior"><span class="rg-easy-icon" aria-hidden="true">←</span>Volver</button><button id="rgEasyHome" type="button"><span class="rg-easy-icon" aria-hidden="true">⌂</span>Inicio</button><button id="rgEasyTools" class="rg-easy-main" type="button"><span class="rg-easy-icon" aria-hidden="true">☰</span>Secciones</button></div><main id="root"></main><div id="rgToolsBackdrop" hidden><div id="rgToolsModal" role="dialog" aria-modal="true" aria-label="Todas las herramientas"><div class="tools-header"><h2>Todas las herramientas</h2><button type="button" onclick="rgCloseAllTools()" aria-label="Cerrar">×</button></div><div id="rgToolsList"></div></div></div><div id="mobileDock" aria-label="Navegación rápida"><button onclick="go('Inicio')"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><small>Inicio</small></button><button onclick="go('Vehículos')"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 11 2-5h10l2 5"/><rect x="3" y="11" width="18" height="8" rx="2"/><circle cx="7.5" cy="16" r="1"/><circle cx="16.5" cy="16" r="1"/></svg><small>Garaje</small></button><button class="add" onclick="rgQuickAction()"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><small>Agregar</small></button><button onclick="go('Gastos')"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v4h4"/><path d="M12 7v5l3 2"/></svg><small>Historial</small></button><button onclick="rgOpenAllTools()"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><small>Más</small></button></div><footer>Rodme Garage · Versión 16.10.2026 · Incluye Talleres, Reportes y Mantenimiento preventivo · Tus registros se sincronizan con Firebase.</footer>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>

@@ -40,9 +40,26 @@ window.rgCalendarDraw=function(){
  for(let day=1;day<=days;day++){const date=ym+'-'+pad(day),ev=byDate.get(date)||[],isToday=date===today(),selected=date===rgCalendarDay;
  cells+='<button type="button" class="rg-cal-day'+(isToday?' is-today':'')+(selected?' is-selected':'')+(ev.length?' has-events':'')+'" onclick="rgCalendarSelect(\''+date+'\')" aria-label="'+day+' de '+monthName+(ev.length?', '+ev.length+' eventos':'')+'" aria-pressed="'+selected+'"><span>'+day+'</span><span class="rg-cal-dots">'+ev.slice(0,3).map(e=>'<i class="rg-cal-dot '+(e.type==='Documento'?'doc':e.type==='Garantía'?'warranty':'service')+'"></i>').join('')+'</span></button>'}
  grid.innerHTML=cells;
+ // Los estilos de botones históricos tienen alta prioridad. Establecemos explícitamente
+ // el color final del calendario para que las reglas globales no pinten todas las fechas.
+ grid.querySelectorAll('.rg-cal-day').forEach(button=>{
+  const selected=button.classList.contains('is-selected'),isToday=button.classList.contains('is-today');
+  button.style.setProperty('background-color',selected?'#fff1f3':isToday?'#f1f6ef':'#ffffff','important');
+  button.style.setProperty('background-image','none','important');
+  button.style.setProperty('color',selected?'#a21d2a':'#29333b','important');
+  button.style.setProperty('border',selected?'2px solid #b51e2a':isToday?'2px solid #708365':'1px solid #e5e9ec','important');
+  button.style.setProperty('box-shadow','none','important');
+ });
+
  const title=document.getElementById('rgCalAgendaTitle'),monthEvents=events.filter(x=>x.date.startsWith(ym)),list=rgCalendarDay?events.filter(x=>x.date===rgCalendarDay):monthEvents;
  if(title)title.textContent=rgCalendarDay?'Eventos del '+rgCalendarDay.split('-').reverse().join('/'): 'Eventos de '+monthName;
  agenda.innerHTML=list.length?list.map(x=>'<button type="button" class="rg-cal-event" onclick="go(\''+x.page+'\')"><span class="rg-cal-event-date">'+x.date.slice(8,10)+'/'+x.date.slice(5,7)+'</span><span class="rg-cal-event-main"><strong>'+esc(x.name)+'</strong><small>'+esc(x.type)+(x.date<today()?' · Vencido':'')+'</small></span><span aria-hidden="true">→</span></button>').join(''):'<p class="rg-cal-empty">No hay eventos '+(rgCalendarDay?'para este día':'registrados en este mes')+'.</p>';
+ agenda.querySelectorAll('.rg-cal-event').forEach(button=>{
+  button.style.setProperty('background-color','#ffffff','important');
+  button.style.setProperty('background-image','none','important');
+  button.style.setProperty('color','#30373d','important');
+  button.style.setProperty('border','1px solid #e4e7e9','important');
+ });
 };
 function fillExtra(){
 ensure();const car=v();let html='';

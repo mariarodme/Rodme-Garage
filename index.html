@@ -878,7 +878,7 @@ function update(input){const shell=input.closest('.rg-date-control');if(!shell)r
 function enhance(){document.querySelectorAll('input[type="date"],input[type="month"],input[type="datetime-local"]').forEach(input=>{if(input.closest('.rg-date-control'))return;const shell=document.createElement('span');shell.className='rg-date-control';input.parentNode.insertBefore(shell,input);shell.appendChild(input);const label=document.createElement('span');label.className='rg-date-caption';const calendar=document.createElement('span');calendar.className='rg-date-calendar';calendar.innerHTML=icon;shell.append(label,calendar);input.addEventListener('change',()=>update(input));input.addEventListener('input',()=>update(input));update(input)})}
 let scheduled=false;new MutationObserver(()=>{if(scheduled)return;scheduled=true;queueMicrotask(()=>{scheduled=false;enhance()})}).observe(document.body,{childList:true,subtree:true});enhance();
 })();
-</script><script src="./enhancements.js?v=dialog-modernized-20261016"></script>
+</script><script src="./enhancements.js?v=dialog-modernized-final-20261016"></script>
 <style>
 #rgImportModal[hidden]{display:none!important}
 #rgImportModal{position:fixed;inset:0;z-index:10005;background:#070a0ce0;display:grid;place-items:center;padding:16px}

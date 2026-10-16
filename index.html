@@ -1349,6 +1349,52 @@ body.rg-sidebar-collapsed #rgSidebarToggle{width:46px!important}
 body.rg-sidebar-collapsed nav#nav .rg-menu-button{padding:10px 6px!important;justify-content:center!important;overflow:hidden!important}
 body.rg-sidebar-collapsed nav#nav .rg-nav-sub{display:none!important}
 }
+
+/* Reparación móvil 2026-10-16: jerarquía compacta y menú utilizable */
+@media(max-width:760px){
+ html{font-size:16px!important}
+ body{overflow-x:hidden!important}
+ header{padding:10px 14px 12px!important;gap:9px!important}
+ header .brandmark{gap:9px!important}
+ header .brandicon{width:34px!important;height:34px!important;font-size:24px!important}
+ header h1,header .brandmark h1{font-size:18px!important;letter-spacing:-.5px!important}
+ header .vehiclebar{padding:0!important;gap:8px!important}
+ header .vehiclebar label{font-size:12px!important}
+ header #vehicleSelect{height:42px!important;min-height:42px!important;font-size:14px!important}
+ #rgActionBar{padding:0!important;display:grid!important;grid-template-columns:1fr 1fr 44px!important;gap:7px!important;background:transparent!important;border:0!important}
+ #rgActionBar button{min-height:43px!important;height:43px!important;padding:6px 7px!important;font-size:13px!important;border-radius:9px!important}
+ #rgActionBar button svg{width:18px;height:18px}
+ #rgEasyBar{padding:8px 14px!important;gap:7px!important}
+ #rgEasyBar .rg-location{font-size:13px!important;flex-basis:auto!important;flex:1 1 100%!important}
+ #rgEasyBar .rg-location small{font-size:12px!important}
+ #rgEasyBar #rgEasyBack,#rgEasyBar #rgEasyTools{min-height:41px!important;font-size:13px!important;border-radius:9px!important}
+ body>main#root{padding:8px 14px calc(110px + env(safe-area-inset-bottom))!important}
+ #rgSimpleHome{margin:0!important}
+ #rgSimpleHome .rg-simple-welcome{font-size:11px!important;letter-spacing:.6px!important;margin:8px 0 3px!important}
+ #rgSimpleHome h2{font-size:24px!important;line-height:1.18!important;letter-spacing:-.8px!important;margin:0 0 4px!important}
+ #rgSimpleHome .rg-simple-intro{font-size:13px!important;margin:0 0 13px!important}
+ #rgSimpleHome .rg-simple-actions{gap:9px!important;margin-bottom:12px!important}
+ #rgSimpleHome .rg-simple-actions button{min-height:84px!important;height:auto!important;gap:8px!important;padding:12px!important;font-size:14px!important;line-height:1.25!important;border-radius:12px!important;background:#fff!important;color:#273038!important;border:1px solid #e2e5e8!important;box-shadow:none!important}
+ #rgSimpleHome .rg-simple-actions button:first-child{background:#b91e29!important;color:white!important;border-color:#b91e29!important}
+ #rgSimpleHome .rg-simple-actions button .rg-simple-ico{font-size:21px!important}
+ #rgSimpleHome .rg-simple-summary{padding:14px!important;border-radius:11px!important}
+ #rgSimpleHome .rg-simple-expand{min-height:43px!important;font-size:14px!important}
+ #mobileDock{z-index:900!important;padding-bottom:env(safe-area-inset-bottom)!important}
+ #mobileDock button{min-width:0!important}
+ #rgToolsBackdrop:not([hidden]){position:fixed!important;inset:0!important;z-index:20000!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;background:#101820a8!important}
+ #rgToolsModal{width:100%!important;max-width:none!important;height:min(76dvh,700px)!important;max-height:76dvh!important;padding:0 15px calc(16px + env(safe-area-inset-bottom))!important;border-radius:17px 17px 0 0!important;overflow:auto!important;overscroll-behavior:contain!important;background:#fff!important}
+ #rgToolsModal .tools-header{position:sticky!important;top:0!important;z-index:3!important;display:flex!important;align-items:center!important;padding:17px 0 12px!important;margin-bottom:8px!important;background:#fff!important}
+ #rgToolsModal h2{font-size:19px!important;line-height:1.25!important;font-weight:750!important}
+ #rgToolsModal .tools-header button{height:39px!important;width:39px!important;min-height:39px!important;font-size:22px!important;padding:0!important;border-radius:10px!important}
+ #rgToolsList .rg-more-search-label{font-size:12px!important}
+ #rgToolsList #rgToolSearch{min-height:43px!important;height:43px!important;font-size:14px!important;padding:10px 12px!important;border-radius:10px!important}
+ #rgToolsList section{margin:10px 0!important}
+ #rgToolsList section h3{font-size:12px!important;letter-spacing:.5px!important;margin:12px 0 7px!important;color:#68737d!important}
+ #rgToolsList .tools-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+ #rgToolsList .tools-grid button{min-height:43px!important;height:auto!important;padding:10px 11px!important;font-size:13px!important;line-height:1.3!important;text-align:left!important;border-radius:9px!important;background:#f7f8fa!important;color:#28333d!important;border:1px solid #e2e6e9!important;font-weight:600!important}
+ #rgToolsList [hidden]{display:none!important}
+}
+@media(max-width:360px){#rgSimpleHome .rg-simple-actions button{font-size:12px!important;padding:10px!important}#rgToolsList .tools-grid button{font-size:12px!important}}
 </style>
 </head><body><header><div class="brandmark"><div class="brandicon">R</div><div><h1>RODME GARAGE</h1></div></div><div class="vehiclebar"><label for="vehicleSelect">Vehículo:</label><select id="vehicleSelect" class="selector" onchange="selectVehicle(this.value)"></select><span class="pill" id="headerSync" aria-live="polite" style="display:none!important" hidden>Comprobando conexión…</span></div></header><nav id="nav"></nav><div id="rgEasyBar" role="navigation" aria-label="Orientación y acceso rápido"><div class="rg-location"><small>Estás en</small><span id="rgEasyCurrent">Inicio</span></div><button id="rgEasyBack" type="button" disabled aria-label="Volver a la sección anterior"><span class="rg-easy-icon" aria-hidden="true">←</span>Volver</button><button id="rgEasyHome" type="button"><span class="rg-easy-icon" aria-hidden="true">⌂</span>Inicio</button><button id="rgEasyTools" class="rg-easy-main" type="button"><span class="rg-easy-icon" aria-hidden="true">☰</span>Secciones</button></div><main id="root"></main><div id="rgToolsBackdrop" hidden><div id="rgToolsModal" role="dialog" aria-modal="true" aria-label="Todas las herramientas"><div class="tools-header"><h2>Todas las herramientas</h2><button type="button" onclick="rgCloseAllTools()" aria-label="Cerrar">×</button></div><div id="rgToolsList"></div></div></div><div id="mobileDock" aria-label="Navegación rápida"><button onclick="go('Inicio')"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><small>Inicio</small></button><button onclick="go('Vehículos')"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 11 2-5h10l2 5"/><rect x="3" y="11" width="18" height="8" rx="2"/><circle cx="7.5" cy="16" r="1"/><circle cx="16.5" cy="16" r="1"/></svg><small>Garaje</small></button><button class="add" onclick="rgQuickAction()"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><small>Agregar</small></button><button onclick="go('Gastos')"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v4h4"/><path d="M12 7v5l3 2"/></svg><small>Historial</small></button><button onclick="rgOpenAllTools()"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><small>Más</small></button></div><footer>Rodme Garage · Versión 16.10.2026 · Incluye Talleres, Reportes y Mantenimiento preventivo · Tus registros se sincronizan con Firebase.</footer>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
